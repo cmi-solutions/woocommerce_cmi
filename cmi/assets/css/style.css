@@ -1,5 +1,20 @@
-.toggle-password{
+.toggle-password {
 	vertical-align: middle;
-    margin: 8px 0 0 -25px;
+	margin: 8px 0 0 -25px;
 	z-index: 2;
+}
+
+/* WooCommerce Order Listing Custom Action Buttons */
+.wc-action-button-cmi_confirm::after,
+a.cmi_confirm::after {
+	font-family: Dashicons, sans-serif !important;
+	content: "\f147" !important; /* dashicons-yes-alt */
+	color: #46b450 !important;
+}
+
+.wc-action-button-cmi_cancel::after,
+a.cmi_cancel::after {
+	font-family: Dashicons, sans-serif !important;
+	content: "\f335" !important; /* dashicons-no-alt */
+	color: #dc3232 !important;
 }

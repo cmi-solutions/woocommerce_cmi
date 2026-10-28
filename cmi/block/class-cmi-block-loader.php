@@ -3,7 +3,7 @@
 /**
  * Utitlity class for load supported classes after woocommerce loaded
  *
- * @link       https://www.cmi.lk
+ * @link       https://www.cmi.co.ma
  * @since      2.0.0
  *
  * @package    Cmi
@@ -12,14 +12,17 @@
 
 
 /**
- * Custom function to declare compatibility with cart_checkout_blocks feature 
+ * Custom function to declare compatibility with cart_checkout_blocks and HPOS features
  */
 function ph_declare_cart_checkout_blocks_compatibility()
 {
     // Check if the required class exists
     if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        $plugin_file = dirname(__DIR__) . '/gateway-cmi.php';
         // Declare compatibility for 'cart_checkout_blocks'
-        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', plugin_dir_path(__FILE__). 'gateway-cmi.php', true);
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', $plugin_file, true);
+        // Declare compatibility for HPOS (High-Performance Order Storage)
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', $plugin_file, true);
     }
 }
 // Hook the custom function to the 'before_woocommerce_init' action

@@ -31,8 +31,7 @@ final class WC_Cmi_Blocks extends AbstractPaymentMethodType
     public function initialize()
     {
         $this->settings = get_option('woocommerce_cmi_settings', []);
-        // $gateways       = WC()->payment_gateways->payment_gateways();
-        $this->gateway  = new WC_Gateway_cmi;
+        $this->gateway  = WC_Gateway_cmi::get_gateway_instance();
     }
 
     /**
