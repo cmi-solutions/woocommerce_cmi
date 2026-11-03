@@ -1,0 +1,864 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce CMI Gateway\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: fr_FR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Domain: cmi\n"
+
+msgid "CMI"
+msgstr "CMI"
+
+msgid "General Settings"
+msgstr "Réglages généraux"
+
+msgid "Basic payment gateway configuration. These settings control how CMI appears to your customers at checkout."
+msgstr "Configuration de base de la passerelle de paiement. Ces réglages définissent la façon dont CMI apparaît à vos clients lors du paiement."
+
+msgid "Enable CMI Payment"
+msgstr "Activer le paiement CMI"
+
+msgid "Enable CMI as a checkout payment method"
+msgstr "Activer CMI comme moyen de paiement à la commande"
+
+msgid "When enabled, customers will see CMI as a payment option during checkout."
+msgstr "Une fois activé, vos clients verront CMI parmi les moyens de paiement lors de la commande."
+
+msgid "Payment Title"
+msgstr "Titre du paiement"
+
+msgid "The name customers see for this payment method at checkout (e.g. \"Pay by Card\", \"CMI\")."
+msgstr "Le nom de ce moyen de paiement affiché aux clients lors de la commande (par ex. « Payer par carte », « CMI »)."
+
+msgid "Payment Description"
+msgstr "Description du paiement"
+
+msgid "A short description shown below the payment title at checkout (e.g. \"Secure payment via CMI\")."
+msgstr "Une courte description affichée sous le titre du paiement lors de la commande (par ex. « Paiement sécurisé via CMI »)."
+
+msgid "Payment Setup"
+msgstr "Configuration du paiement"
+
+msgid "Choose your CMI kit type and configure how payments are processed."
+msgstr "Choisissez votre type de kit CMI et configurez le traitement des paiements."
+
+msgid "CMI Kit Type"
+msgstr "Type de kit CMI"
+
+msgid "<strong>Standard Kit</strong> — Redirects the customer to the CMI hosted payment page. Transaction management (confirmation, void, refund) must be done from the CMI back office.<br><strong>Complete Kit (with API)</strong> — Same as Standard Kit, plus a <strong>CMI Actions</strong> column in the WooCommerce orders list allowing you to <strong>Confirm</strong>, <strong>Void</strong>, and <strong>Refund</strong> transactions directly from your shop."
+msgstr "<strong>Kit Standard</strong> — Redirige le client vers la page de paiement hébergée par CMI. La gestion des transactions (confirmation, annulation, remboursement) se fait depuis le back-office CMI.<br><strong>Kit Complet (avec API)</strong> — Identique au Kit Standard, avec en plus une colonne <strong>Actions CMI</strong> dans la liste des commandes WooCommerce pour <strong>Confirmer</strong>, <strong>Annuler</strong> et <strong>Rembourser</strong> les transactions directement depuis votre boutique."
+
+msgid "Standard Kit — Hosted Payment Page only"
+msgstr "Kit Standard — Page de paiement hébergée uniquement"
+
+msgid "Complete Kit — With API Management (Confirm, Void, Refund)"
+msgstr "Kit Complet — Avec gestion par API (Confirmer, Annuler, Rembourser)"
+
+msgid "Payment Confirmation"
+msgstr "Confirmation du paiement"
+
+msgid "<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. CMI does not call your shop's callback in this mode: the order is updated when the customer returns to the shop. With the Complete Kit, the plugin also checks CMI automatically if the order is still pending after 15 minutes, and you can use Check CMI at any time."
+msgstr "<strong>Automatique</strong> — Le paiement est débité immédiatement lorsque le client finalise sa commande via le callback.<br><strong>Manuelle</strong> — Le paiement est seulement autorisé (pré-autorisation). Vous devez le confirmer manuellement pour débiter les fonds : depuis la liste des commandes avec le Kit Complet (API), ou depuis le back-office CMI avec le Kit Standard. Dans ce mode, CMI n'appelle pas le callback de votre boutique : la commande est mise à jour au retour du client sur la boutique. Avec le Kit Complet, l'extension vérifie aussi automatiquement CMI si la commande est toujours en attente de paiement après 15 minutes, et vous pouvez utiliser Vérifier CMI à tout moment."
+
+msgid "Automatic — Capture payment immediately"
+msgstr "Automatique — Débiter le paiement immédiatement"
+
+msgid "Manual — Pre-authorize only (confirm later)"
+msgstr "Manuelle — Pré-autorisation uniquement (confirmer plus tard)"
+
+msgid "Order Status After PostAuth"
+msgstr "État de la commande après PostAuth"
+
+msgid "Choose the WooCommerce order status applied after a successful payment capture (PostAuth / Confirmation). Select an existing status or choose \"Custom\" to enter your own."
+msgstr "Choisissez l'état de commande WooCommerce appliqué après le débit réussi du paiement (PostAuth / Confirmation). Sélectionnez un état existant ou choisissez « Personnalisé » pour saisir le vôtre."
+
+msgid "Custom Order Status Slug"
+msgstr "Identifiant de l'état personnalisé"
+
+msgid "Enter a short status slug (<strong>max 17 characters</strong>, letters, numbers, and hyphens only). The <code>wc-</code> prefix is added automatically. Example: <code>cmi-confirmed</code>, <code>prep-deliv</code>."
+msgstr "Saisissez un identifiant court (<strong>17 caractères maximum</strong>, lettres, chiffres et tirets uniquement). Le préfixe <code>wc-</code> est ajouté automatiquement. Exemple : <code>cmi-confirmed</code>, <code>prep-deliv</code>."
+
+msgid "Payment Page Language"
+msgstr "Langue de la page de paiement"
+
+msgid "The language displayed on the CMI hosted payment page. \"Auto\" uses your store's locale."
+msgstr "La langue affichée sur la page de paiement hébergée par CMI. « Auto » utilise la langue de votre boutique."
+
+msgid "Auto — Use store locale"
+msgstr "Auto — Langue de la boutique"
+
+msgid "French"
+msgstr "Français"
+
+msgid "English"
+msgstr "Anglais"
+
+msgid "Arabic"
+msgstr "Arabe"
+
+msgid "Automatic Redirect"
+msgstr "Redirection automatique"
+
+msgid "Return customers to the shop automatically after payment"
+msgstr "Renvoyer automatiquement les clients vers la boutique après le paiement"
+
+msgid "When enabled, CMI sends the customer back to your shop as soon as the payment is finished. When disabled, the customer stays on CMI's result page and returns to the shop themselves."
+msgstr "Si cette option est activée, CMI renvoie le client vers votre boutique dès la fin du paiement. Si elle est désactivée, le client reste sur la page de résultat CMI et revient lui-même sur la boutique."
+
+msgid "Order Identifier Prefix"
+msgstr "Préfixe de l'identifiant de commande"
+
+msgid "Example: order 1050 appears as %s, both in WooCommerce and in the CMI back office. The prefix keeps this shop's order numbers different from any other website using the same CMI account. It was generated automatically; you can replace it with something more readable, such as your shop's initials. Orders already sent to CMI keep their number."
+msgstr "Exemple : la commande 1050 apparaît sous la forme %s, dans WooCommerce comme dans le back-office CMI. Le préfixe distingue les numéros de commande de cette boutique de ceux de tout autre site utilisant le même compte CMI. Il a été généré automatiquement ; vous pouvez le remplacer par quelque chose de plus lisible, comme les initiales de votre boutique. Les commandes déjà envoyées à CMI conservent leur numéro."
+
+msgid "Gateway Connection"
+msgstr "Connexion à la passerelle"
+
+msgid "Enter the credentials provided by CMI. These are required for your shop to connect to the CMI payment gateway."
+msgstr "Saisissez les identifiants fournis par CMI. Ils sont nécessaires pour connecter votre boutique à la passerelle de paiement CMI."
+
+msgid "Client ID *"
+msgstr "Client ID *"
+
+msgid "Your merchant Client ID provided by CMI (e.g. 600XXXXXX)."
+msgstr "Votre Client ID marchand fourni par CMI (par ex. 600XXXXXX)."
+
+msgid "Store Key (Hash Key) *"
+msgstr "Clé de boutique (Hash Key) *"
+
+msgid "The secret hash key configured in your CMI Merchant Center. Used to secure communication between your shop and CMI. The key must not contain the word \"SKS\"."
+msgstr "La clé secrète configurée dans votre espace marchand CMI. Elle sécurise les échanges entre votre boutique et CMI. La clé ne doit pas contenir le mot « SKS »."
+
+msgid "CMI: the Store Key was not saved because it must not contain the word \"SKS\". The previous key was kept."
+msgstr "CMI : la clé de boutique n'a pas été enregistrée, car elle ne doit pas contenir le mot « SKS ». La clé précédente a été conservée."
+
+msgid "Payment Page URL *"
+msgstr "URL de la page de paiement *"
+
+msgid "The CMI hosted payment page URL (e.g. https://payment.cmi.co.ma/fim/est3Dgate)."
+msgstr "L'URL de la page de paiement hébergée par CMI (par ex. https://payment.cmi.co.ma/fim/est3Dgate)."
+
+msgid "API Management Credentials"
+msgstr "Identifiants de gestion API"
+
+msgid "These credentials are provided by CMI and are required for <strong>Confirmation</strong> (PostAuth), <strong>Void</strong>, and <strong>Refund</strong> (Credit) operations. Only needed when using the Complete Kit."
+msgstr "Ces identifiants sont fournis par CMI et sont nécessaires pour les opérations de <strong>Confirmation</strong> (PostAuth), d'<strong>Annulation</strong> (Void) et de <strong>Remboursement</strong> (Credit). Requis uniquement avec le Kit Complet."
+
+msgid "CMI API URL *"
+msgstr "URL de l'API CMI *"
+
+msgid "The XML API endpoint URL (e.g. https://payment.cmi.co.ma/fim/api). This is NOT the same as the Payment Page URL above."
+msgstr "L'URL de l'API XML (par ex. https://payment.cmi.co.ma/fim/api). Elle est DIFFÉRENTE de l'URL de la page de paiement ci-dessus."
+
+msgid "API Username *"
+msgstr "Nom d'utilisateur API *"
+
+msgid "The API username provided by CMI for back-office operations."
+msgstr "Le nom d'utilisateur API fourni par CMI pour les opérations de back-office."
+
+msgid "API Password *"
+msgstr "Mot de passe API *"
+
+msgid "The API password provided by CMI for back-office operations."
+msgstr "Le mot de passe API fourni par CMI pour les opérations de back-office."
+
+msgid "Currency & Exchange Rates"
+msgstr "Devises et taux de change"
+
+msgid "Payments are processed in MAD (Moroccan Dirham) on your standard CMI merchant account."
+msgstr "Les paiements sont traités en MAD (dirham marocain) sur votre compte marchand CMI standard."
+
+msgid "Exchange Rate Mode"
+msgstr "Mode de taux de change"
+
+msgid "If your WooCommerce store currency is not MAD, choose how to convert order amounts to MAD before sending them to CMI.<br><strong>Manual</strong> — You enter and maintain exchange rates yourself in the table below.<br><strong>External Multi-Currency Plugin</strong> — Rates are retrieved automatically from a compatible multi-currency plugin (WOOCS / FOX, WPML + WCML, CURCY / VillaTheme, Aelia Currency Switcher).<br><em>⚠️ In both cases, you are fully responsible for the accuracy of the exchange rates applied.</em>"
+msgstr "Si la devise de votre boutique WooCommerce n'est pas le MAD, choisissez comment convertir les montants en MAD avant de les envoyer à CMI.<br><strong>Manuel</strong> — Vous saisissez et tenez à jour vous-même les taux de change dans le tableau ci-dessous.<br><strong>Extension multi-devises externe</strong> — Les taux sont récupérés automatiquement depuis une extension multi-devises compatible (WOOCS / FOX, WPML + WCML, CURCY / VillaTheme, Aelia Currency Switcher).<br><em>⚠️ Dans les deux cas, vous êtes entièrement responsable de l'exactitude des taux de change appliqués.</em>"
+
+msgid "— Not needed (store currency is MAD)"
+msgstr "— Non nécessaire (la devise de la boutique est le MAD)"
+
+msgid "Manual — Enter exchange rates manually"
+msgstr "Manuel — Saisir les taux de change manuellement"
+
+msgid "External Multi-Currency Plugin — Automatic rates"
+msgstr "Extension multi-devises externe — Taux automatiques"
+
+msgid "INITIATED"
+msgstr "INITIÉ"
+
+msgid "FAILED"
+msgstr "ÉCHOUÉ"
+
+msgid "CANCELLED"
+msgstr "ANNULÉ"
+
+msgid "VOIDED"
+msgstr "ANNULÉ (VOID)"
+
+msgid "PRE_CONFIRMATION_REQUIRED"
+msgstr "CONFIRMATION REQUISE"
+
+msgid "SUCCESS"
+msgstr "RÉUSSI"
+
+msgid "REFUNDED"
+msgstr "REMBOURSÉ"
+
+msgid "PENDING"
+msgstr "EN ATTENTE"
+
+msgid "Currency details:"
+msgstr "Détails des devises :"
+
+msgid "Currency code"
+msgstr "Code de la devise"
+
+msgid "Currency rate"
+msgstr "Taux de la devise"
+
+msgid "+ Add currency"
+msgstr "+ Ajouter une devise"
+
+msgid "Remove selected currency(s)"
+msgstr "Supprimer la ou les devises sélectionnées"
+
+msgid "CMI: the exchange rate for %s was not saved because it must be a number greater than 0."
+msgstr "CMI : le taux de change de %s n'a pas été enregistré, car il doit être un nombre supérieur à 0."
+
+msgid "CMI Payment Gateway Configuration"
+msgstr "Configuration de la passerelle de paiement CMI"
+
+msgid "Configure your Moroccan and International card payment processing via CMI. Fields with (*) are mandatory."
+msgstr "Configurez le traitement de vos paiements par cartes marocaines et internationales via CMI. Les champs marqués (*) sont obligatoires."
+
+msgid "🔌 External Plugin Mode Active"
+msgstr "🔌 Mode extension externe actif"
+
+msgid "Exchange rates will be retrieved automatically from your multi-currency plugin. The following plugins are auto-detected:"
+msgstr "Les taux de change seront récupérés automatiquement depuis votre extension multi-devises. Les extensions suivantes sont détectées automatiquement :"
+
+msgid "Currency Switcher for WooCommerce"
+msgstr "Currency Switcher pour WooCommerce"
+
+msgid "WooCommerce Multilingual & Multicurrency"
+msgstr "WooCommerce Multilingual & Multicurrency"
+
+msgid "VillaTheme Multi Currency for WooCommerce"
+msgstr "VillaTheme Multi Currency pour WooCommerce"
+
+msgid "Aelia Currency Switcher"
+msgstr "Aelia Currency Switcher"
+
+msgid "⚠️ You are fully responsible for ensuring that your multi-currency plugin is properly configured and that the exchange rates are accurate."
+msgstr "⚠️ Vous êtes entièrement responsable de la bonne configuration de votre extension multi-devises et de l'exactitude des taux de change."
+
+msgid "Show password"
+msgstr "Afficher le mot de passe"
+
+msgid "Hide password"
+msgstr "Masquer le mot de passe"
+
+msgid "Card payment in %s is temporarily unavailable. Please contact the store."
+msgstr "Le paiement par carte en %s est temporairement indisponible. Veuillez contacter la boutique."
+
+msgid "Thank you for your order. You will be redirected to CMI to make the payment."
+msgstr "Merci pour votre commande. Vous allez être redirigé vers CMI pour effectuer le paiement."
+
+msgid "Pay via CMI"
+msgstr "Payer via CMI"
+
+msgid "Cancel order"
+msgstr "Annuler la commande"
+
+msgid "Thank you for your order. Please click the button below to pay with CMI."
+msgstr "Merci pour votre commande. Veuillez cliquer sur le bouton ci-dessous pour payer avec CMI."
+
+msgid "CMI callback does not identify a valid order."
+msgstr "Le retour CMI n'identifie pas une commande valide."
+
+msgid "CMI callback signature is invalid."
+msgstr "La signature du retour CMI n'est pas valide."
+
+msgid "CMI callback ignored: it reports %1$s (ProcReturnCode: %2$s) but the CMI payment is already %3$s."
+msgstr "Retour CMI ignoré : il signale %1$s (ProcReturnCode : %2$s), mais le paiement CMI est déjà %3$s."
+
+msgid "an approval"
+msgstr "une approbation"
+
+msgid "a failure"
+msgstr "un échec"
+
+msgid "N/A"
+msgstr "N/D"
+
+msgid "CMI payment failed: %s (ProcReturnCode: %s)"
+msgstr "Échec du paiement CMI : %s (ProcReturnCode : %s)"
+
+msgid "Transaction declined."
+msgstr "Transaction refusée."
+
+msgid "CMI pre-authorization received; manual confirmation is required."
+msgstr "Pré-autorisation CMI reçue ; une confirmation manuelle est requise."
+
+msgid "CMI pre-authorization received; confirming through the CMI API."
+msgstr "Pré-autorisation CMI reçue ; confirmation en cours via l'API CMI."
+
+msgid "CMI automatic API confirmation failed: %s"
+msgstr "Échec de la confirmation automatique via l'API CMI : %s"
+
+msgid "CMI payment confirmed and captured (status set to %s)."
+msgstr "Paiement CMI confirmé et débité (état défini sur %s)."
+
+msgid "CMI payment result"
+msgstr "Résultat du paiement CMI"
+
+msgid "Invalid CMI cancellation request."
+msgstr "Demande d'annulation CMI non valide."
+
+msgid "The customer clicked Cancel on the CMI payment page, but this order has a payment on CMI or its status could not be checked (%s). The order was not cancelled. If the customer wants to cancel, void or refund the payment yourself."
+msgstr "Le client a cliqué sur Annuler sur la page de paiement CMI, mais cette commande a un paiement sur CMI ou son état n'a pas pu être vérifié (%s). La commande n'a pas été annulée. Si le client souhaite annuler, annulez ou remboursez le paiement vous-même."
+
+msgid "Continue to your order"
+msgstr "Continuer vers votre commande"
+
+msgid "Your payment result could not be displayed. Please check your order or contact the store."
+msgstr "Le résultat de votre paiement n'a pas pu être affiché. Veuillez vérifier votre commande ou contacter la boutique."
+
+msgid "Payment was cancelled by the customer on the CMI payment page."
+msgstr "Le paiement a été annulé par le client sur la page de paiement CMI."
+
+msgid "Charged by CMI:"
+msgstr "Débité par CMI :"
+
+msgid "Refunded via CMI: %s MAD"
+msgstr "Remboursé via CMI : %s MAD"
+
+msgid "CMI Actions"
+msgstr "Actions CMI"
+
+msgid "Query payment status from CMI XML API"
+msgstr "Interroger l'état du paiement via l'API XML CMI"
+
+msgid "Check CMI"
+msgstr "Vérifier CMI"
+
+msgid "Confirm and capture this PRE transaction via CMI API (PostAuth)"
+msgstr "Confirmer et débiter cette transaction PRE via l'API CMI (PostAuth)"
+
+msgid "Confirm"
+msgstr "Confirmer"
+
+msgid "Void and cancel this PRE transaction via CMI API (Void)"
+msgstr "Annuler cette transaction PRE via l'API CMI (Void)"
+
+msgid "Void"
+msgstr "Annuler"
+
+msgid "The MAD amount charged by CMI was not recorded for this older order."
+msgstr "Le montant en MAD débité par CMI n'a pas été enregistré pour cette ancienne commande."
+
+msgid "Refund from CMI back office"
+msgstr "Rembourser depuis le back-office CMI"
+
+msgid "Refund (%s MAD)"
+msgstr "Rembourser (%s MAD)"
+
+msgid "Refund"
+msgstr "Rembourser"
+
+msgid "Refunded: %s MAD"
+msgstr "Remboursé : %s MAD"
+
+msgid "Refund remaining balance (%s MAD) via CMI API (Credit)"
+msgstr "Rembourser le solde restant (%s MAD) via l'API CMI (Credit)"
+
+msgid "Refund this transaction (Full or Partial) via CMI API (Credit)"
+msgstr "Rembourser cette transaction (totalement ou partiellement) via l'API CMI (Credit)"
+
+msgid "Refunded (%s MAD)"
+msgstr "Remboursé (%s MAD)"
+
+msgid "Pending"
+msgstr "En attente"
+
+msgid "Voided"
+msgstr "Annulée (Void)"
+
+msgid "Cancelled"
+msgstr "Annulée"
+
+msgid "Failed"
+msgstr "Échouée"
+
+msgid "Processing"
+msgstr "En cours"
+
+msgid "Confirmed"
+msgstr "Confirmée"
+
+msgid "On-hold"
+msgstr "En attente"
+
+msgid "Completed"
+msgstr "Terminée"
+
+msgid "Custom (specify below)"
+msgstr "Personnalisé (à préciser ci-dessous)"
+
+msgctxt "Order status"
+msgid "Confirmed"
+msgstr "Confirmée"
+
+msgid "Confirmed <span class=\"count\">(%s)</span>"
+msgid_plural "Confirmed <span class=\"count\">(%s)</span>"
+msgstr[0] "Confirmée <span class=\"count\">(%s)</span>"
+msgstr[1] "Confirmées <span class=\"count\">(%s)</span>"
+
+msgid "Query status via CMI API"
+msgstr "Interroger l'état via l'API CMI"
+
+msgid "Confirm CMI PRE transaction"
+msgstr "Confirmer la transaction PRE CMI"
+
+msgid "Void CMI PRE transaction"
+msgstr "Annuler la transaction PRE CMI"
+
+msgid "Refund via CMI API"
+msgstr "Rembourser via l'API CMI"
+
+msgid "Confirm CMI transaction"
+msgstr "Confirmer la transaction CMI"
+
+msgid "Void CMI transaction"
+msgstr "Annuler la transaction CMI"
+
+msgid "CMI cancellation (Void)"
+msgstr "Annulation CMI (Void)"
+
+msgid "Order"
+msgstr "Commande"
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "⚠️ Warning: this action cannot be undone!"
+msgstr "⚠️ Attention : cette action est irréversible !"
+
+msgid "The CMI payment authorization will be permanently cancelled with the customer's bank."
+msgstr "L'autorisation de paiement CMI sera définitivement annulée auprès de la banque du client."
+
+msgid "The funds held on the customer's card will be released immediately."
+msgstr "Les fonds réservés sur la carte du client seront immédiatement libérés."
+
+msgid "This order can never be confirmed or charged later."
+msgstr "Cette commande ne pourra plus jamais être confirmée ni débitée ultérieurement."
+
+msgid "Are you sure you want to permanently cancel this CMI pre-authorization?"
+msgstr "Êtes-vous certain de vouloir annuler définitivement cette pré-autorisation CMI ?"
+
+msgid "Keep the order"
+msgstr "Conserver la commande"
+
+msgid "Confirm cancellation (cannot be undone)"
+msgstr "Confirmer l'annulation (irréversible)"
+
+msgid "Confirm this payment?"
+msgstr "Confirmer ce paiement ?"
+
+msgid "We recommend informing the customer before you confirm. A charge they no longer expect can lead to a chargeback later."
+msgstr "Nous vous recommandons d'informer le client avant de confirmer. Un débit qu'il n'attend plus peut entraîner un impayé (chargeback) par la suite."
+
+msgid "Go back"
+msgstr "Retour"
+
+msgid "Confirm anyway"
+msgstr "Confirmer quand même"
+
+msgid "CMI API Refund"
+msgstr "Remboursement via l'API CMI"
+
+msgid "⚠️ Warning: this action cannot be undone"
+msgstr "⚠️ Attention : action irréversible"
+
+msgid "A refund through the CMI API is immediate and final. The funds will be returned to the customer and this action cannot be undone."
+msgstr "Le remboursement via l'API CMI est immédiat et définitif. Les fonds seront retournés au client et cette action ne peut pas être annulée."
+
+msgid "Total Order Amount:"
+msgstr "Montant total de la commande :"
+
+msgid "Already Refunded:"
+msgstr "Déjà remboursé :"
+
+msgid "Available Refundable Balance:"
+msgstr "Solde remboursable disponible :"
+
+msgid "Refund Remaining Balance"
+msgstr "Rembourser le solde restant"
+
+msgid "Custom Partial Amount"
+msgstr "Montant partiel personnalisé"
+
+msgid "Enter partial amount to refund (MAD):"
+msgstr "Saisissez le montant partiel à rembourser (MAD) :"
+
+msgid "Refund Reason (Optional):"
+msgstr "Motif du remboursement (facultatif) :"
+
+msgid "e.g. Customer request / Item returned"
+msgstr "par ex. Demande du client / Article retourné"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Confirm refund (cannot be undone)"
+msgstr "Confirmer le remboursement (irréversible)"
+
+msgid "This payment was pre-authorized %d days ago."
+msgstr "Ce paiement a été pré-autorisé il y a %d jours."
+
+msgid "Confirming via CMI API..."
+msgstr "Confirmation en cours via l'API CMI..."
+
+msgid "Cancelling via the CMI API..."
+msgstr "Annulation en cours via l'API CMI..."
+
+msgid "Refund the remaining balance"
+msgstr "Rembourser le solde restant"
+
+msgid "Full refund"
+msgstr "Remboursement total"
+
+msgid "Please enter a valid positive number for the refund amount."
+msgstr "Veuillez saisir un nombre positif valide pour le montant du remboursement."
+
+msgid "Refund amount cannot exceed the available balance of "
+msgstr "Le montant du remboursement ne peut pas dépasser le solde disponible de "
+
+msgid "Processing the refund via the CMI API..."
+msgstr "Traitement du remboursement via l'API CMI..."
+
+msgid "We recommend informing the customer before you confirm. A charge they no longer expect can lead to a chargeback later. Confirm anyway?"
+msgstr "Nous vous recommandons d'informer le client avant de confirmer. Un débit qu'il n'attend plus peut entraîner un impayé (chargeback) par la suite. Confirmer quand même ?"
+
+msgid "⚠️ Warning: a CMI cancellation (Void) cannot be undone. The authorization will be permanently cancelled with the bank and can never be charged. Confirm?"
+msgstr "⚠️ Attention : l'annulation CMI (Void) est irréversible. L'autorisation sera définitivement annulée auprès de la banque et ne pourra plus jamais être débitée. Confirmer ?"
+
+msgid "⚠️ Warning: a refund through the CMI API cannot be undone. The funds will be returned to the customer immediately and permanently. Confirm?"
+msgstr "⚠️ Attention : le remboursement via l'API CMI est irréversible. Les fonds seront immédiatement et définitivement retournés au client. Confirmer ?"
+
+msgid "You do not have permission to manage WooCommerce orders."
+msgstr "Vous n'avez pas l'autorisation de gérer les commandes WooCommerce."
+
+msgid "Invalid order ID."
+msgstr "Identifiant de commande non valide."
+
+msgid "CMI confirmation failed for order #%d: %s"
+msgstr "Échec de la confirmation CMI pour la commande n° %d : %s"
+
+msgid "Order #%d confirmed successfully via CMI API."
+msgstr "Commande n° %d confirmée avec succès via l'API CMI."
+
+msgid "CMI void/cancellation failed for order #%d: %s"
+msgstr "Échec de l'annulation CMI pour la commande n° %d : %s"
+
+msgid "Order #%d voided and cancelled successfully via CMI API."
+msgstr "Commande n° %d annulée avec succès via l'API CMI."
+
+msgid "CMI refund failed for order #%d: %s"
+msgstr "Échec du remboursement CMI pour la commande n° %d : %s"
+
+msgid "Partial refund for order #%1$d processed successfully via CMI API. Refunded: %2$s MAD (remaining refundable: %3$s MAD)."
+msgstr "Remboursement partiel de la commande n° %1$d effectué avec succès via l'API CMI. Remboursé : %2$s MAD (solde remboursable : %3$s MAD)."
+
+msgid "Order #%1$d fully refunded successfully via CMI API (%2$s MAD)."
+msgstr "Commande n° %1$d entièrement remboursée avec succès via l'API CMI (%2$s MAD)."
+
+msgid "CMI Status Check result: [%s] %s"
+msgstr "Résultat de la vérification CMI : [%s] %s"
+
+msgid "CMI status for order #%d: [%s] %s"
+msgstr "État CMI de la commande n° %d : [%s] %s"
+
+msgid "CMI confirmation failed: %s"
+msgstr "Échec de la confirmation CMI : %s"
+
+msgid "CMI void/cancellation failed: %s"
+msgstr "Échec de l'annulation CMI : %s"
+
+msgid "CMI refund failed: %s"
+msgstr "Échec du remboursement CMI : %s"
+
+msgid "Order not found."
+msgstr "Commande introuvable."
+
+msgid "This order was not paid with CMI."
+msgstr "Cette commande n'a pas été payée avec CMI."
+
+msgid "Configure the CMI API URL, username, and password before issuing refunds."
+msgstr "Configurez l'URL, le nom d'utilisateur et le mot de passe de l'API CMI avant d'effectuer des remboursements."
+
+msgid "This order was paid in another currency before the plugin recorded the MAD amount charged by CMI, so the exact refund amount cannot be calculated. Please refund it from the CMI back office."
+msgstr "Cette commande a été payée dans une autre devise avant que l'extension n'enregistre le montant en MAD débité par CMI : le montant exact du remboursement ne peut donc pas être calculé. Veuillez la rembourser depuis le back-office CMI."
+
+msgid "Invalid refund amount."
+msgstr "Montant de remboursement non valide."
+
+msgid "Refund amount (%s MAD) exceeds remaining balance (%s MAD)."
+msgstr "Le montant du remboursement (%s MAD) dépasse le solde restant (%s MAD)."
+
+msgid "Nothing is left to refund on this order."
+msgstr "Il ne reste rien à rembourser sur cette commande."
+
+msgid "An operation is already in progress for this order."
+msgstr "Une opération est déjà en cours pour cette commande."
+
+msgid "CMI rejected the refund request."
+msgstr "CMI a refusé la demande de remboursement."
+
+msgid "CMI refunded %1$s MAD, but WooCommerce could not record the refund: %2$s. Please add it manually with \"Refund manually\"."
+msgstr "CMI a remboursé %1$s MAD, mais WooCommerce n'a pas pu enregistrer le remboursement : %2$s. Veuillez l'ajouter manuellement avec « Remboursement manuel »."
+
+msgid "Order fully refunded via CMI API: %1$s MAD%2$s (TransId: %3$s). Reason: %4$s"
+msgstr "Commande entièrement remboursée via l'API CMI : %1$s MAD%2$s (TransId : %3$s). Motif : %4$s"
+
+msgid "Partial refund processed via CMI API: %1$s MAD%2$s (TransId: %3$s). Total refunded: %4$s / %5$s MAD (Remaining: %6$s MAD). Reason: %7$s"
+msgstr "Remboursement partiel effectué via l'API CMI : %1$s MAD%2$s (TransId : %3$s). Total remboursé : %4$s / %5$s MAD (restant : %6$s MAD). Motif : %7$s"
+
+msgid "Only a CMI PRE transaction can be voided. Confirmed POST transactions must be refunded."
+msgstr "Seule une transaction PRE CMI peut être annulée. Les transactions POST confirmées doivent être remboursées."
+
+msgid "Configure the CMI API URL, username, and password before cancelling PRE transactions."
+msgstr "Configurez l'URL, le nom d'utilisateur et le mot de passe de l'API CMI avant d'annuler des transactions PRE."
+
+msgid "CMI rejected the void request."
+msgstr "CMI a refusé la demande d'annulation."
+
+msgid "CMI PRE transaction voided via CMI API (TransId: %s)."
+msgstr "Transaction PRE CMI annulée via l'API CMI (TransId : %s)."
+
+msgid "Only a CMI PRE transaction can be confirmed."
+msgstr "Seule une transaction PRE CMI peut être confirmée."
+
+msgid "Configure the CMI API URL, username, and password before confirming PRE transactions."
+msgstr "Configurez l'URL, le nom d'utilisateur et le mot de passe de l'API CMI avant de confirmer des transactions PRE."
+
+msgid "A confirmation attempt is already in progress for this order."
+msgstr "Une tentative de confirmation est déjà en cours pour cette commande."
+
+msgid "CMI rejected the confirmation request."
+msgstr "CMI a refusé la demande de confirmation."
+
+msgid "CMI PRE transaction confirmed and captured through the CMI API (status set to %s)."
+msgstr "Transaction PRE CMI confirmée et débitée via l'API CMI (état défini sur %s)."
+
+msgid "Could not verify the transaction with CMI, so no request was sent: %s"
+msgstr "Impossible de vérifier la transaction auprès de CMI ; aucune requête n'a donc été envoyée : %s"
+
+msgid "Order ID %s was not found in the CMI back office. No request was sent to CMI."
+msgstr "L'identifiant de commande %s est introuvable dans le back-office CMI. Aucune requête n'a été envoyée à CMI."
+
+msgid "The CMI transaction for order ID %s cannot be matched to this order (no payment confirmation or amount was recorded). No request was sent to CMI; please manage it from the CMI back office."
+msgstr "La transaction CMI de l'identifiant de commande %s ne peut pas être associée à cette commande (aucune confirmation de paiement ni aucun montant enregistré). Aucune requête n'a été envoyée à CMI ; veuillez la gérer depuis le back-office CMI."
+
+msgid "Order ID %s exists in the CMI back office but belongs to another transaction, not to this order's payment. No request was sent to CMI."
+msgstr "L'identifiant de commande %s existe dans le back-office CMI, mais il appartient à une autre transaction et non au paiement de cette commande. Aucune requête n'a été envoyée à CMI."
+
+msgid "CMI does not show an active pre-authorization for this order, so it cannot be confirmed or voided."
+msgstr "CMI n'indique aucune pré-autorisation active pour cette commande : elle ne peut donc être ni confirmée ni annulée."
+
+msgid "This payment is already captured on CMI. Use Refund instead."
+msgstr "Ce paiement est déjà débité sur CMI. Utilisez plutôt Rembourser."
+
+msgid "This payment is not captured on CMI, so it cannot be refunded. Void the pre-authorization instead."
+msgstr "Ce paiement n'est pas débité sur CMI : il ne peut donc pas être remboursé. Annulez plutôt la pré-autorisation."
+
+msgid "This transaction is already voided on CMI."
+msgstr "Cette transaction est déjà annulée sur CMI."
+
+msgid "CMI did not report the transaction state, so no request was sent. Please check the order in the CMI back office."
+msgstr "CMI n'a pas indiqué l'état de la transaction ; aucune requête n'a donc été envoyée. Veuillez vérifier la commande dans le back-office CMI."
+
+msgid "The order status was updated to match CMI."
+msgstr "L'état de la commande a été mis à jour pour correspondre à CMI."
+
+msgid "Order was not placed using CMI."
+msgstr "Cette commande n'a pas été passée avec CMI."
+
+msgid "CMI XML API credentials not configured."
+msgstr "Les identifiants de l'API XML CMI ne sont pas configurés."
+
+msgid "CMI Status Check: No transaction record found on CMI (%s)."
+msgstr "Vérification CMI : aucune transaction trouvée sur CMI (%s)."
+
+msgid "Not found"
+msgstr "Introuvable"
+
+msgid "Not Found"
+msgstr "Introuvable"
+
+msgid "No transaction record found on CMI (Customer likely abandoned the checkout)."
+msgstr "Aucune transaction trouvée sur CMI (le client a probablement abandonné le paiement)."
+
+msgid "Not this order"
+msgstr "Pas cette commande"
+
+msgid "CMI Status Check: Transaction is VOIDED / Cancelled on CMI (TransId: %s, AuthCode: %s)."
+msgstr "Vérification CMI : la transaction est ANNULÉE sur CMI (TransId : %s, AuthCode : %s)."
+
+msgid "CMI Status Check: Transaction confirmed as VOIDED on CMI (TransId: %s)."
+msgstr "Vérification CMI : la transaction est bien ANNULÉE sur CMI (TransId : %s)."
+
+msgid "Transaction voided on CMI (TransId: %s)."
+msgstr "Transaction annulée sur CMI (TransId : %s)."
+
+msgid "CMI Status Check: Payment partially refunded on CMI (refunded %1$s of %2$s MAD, TransId: %3$s). Order status kept."
+msgstr "Vérification CMI : paiement partiellement remboursé sur CMI (%1$s remboursés sur %2$s MAD, TransId : %3$s). État de la commande conservé."
+
+msgid "Partially credited"
+msgstr "Partiellement remboursé"
+
+msgid "Payment partially refunded on CMI (%1$s of %2$s MAD)."
+msgstr "Paiement partiellement remboursé sur CMI (%1$s sur %2$s MAD)."
+
+msgid "CMI Status Check: Transaction was refunded / credited on CMI (TransId: %s, Amount: %s MAD)."
+msgstr "Vérification CMI : la transaction a été remboursée sur CMI (TransId : %s, montant : %s MAD)."
+
+msgid "CMI Status Check: Transaction confirmed as REFUNDED on CMI (TransId: %s)."
+msgstr "Vérification CMI : la transaction est bien REMBOURSÉE sur CMI (TransId : %s)."
+
+msgid "Credited"
+msgstr "Remboursé"
+
+msgid "Payment refunded on CMI (TransId: %s)."
+msgstr "Paiement remboursé sur CMI (TransId : %s)."
+
+msgid "CMI Status Check: Pre-authorization verified on CMI (Status: Approved / Pre-auth, AuthCode: %s, TransId: %s). Order is on-hold awaiting capture. Shipment not possible yet."
+msgstr "Vérification CMI : pré-autorisation vérifiée sur CMI (état : approuvée / pré-autorisation, AuthCode : %s, TransId : %s). La commande est en attente de débit. Expédition impossible pour le moment."
+
+msgid "CMI Status Check: Pre-authorization confirmed on CMI (Status: Approved / Pre-auth, AuthCode: %s, TransId: %s). Order remains on-hold awaiting capture."
+msgstr "Vérification CMI : pré-autorisation confirmée sur CMI (état : approuvée / pré-autorisation, AuthCode : %s, TransId : %s). La commande reste en attente de débit."
+
+msgid "Approved (preauthorization)"
+msgstr "Approuvée (pré-autorisation)"
+
+msgid "Pre-authorized on CMI (AuthCode: %s, TransId: %s). Awaiting capture; shipment not possible yet."
+msgstr "Pré-autorisé sur CMI (AuthCode : %s, TransId : %s). En attente de débit ; expédition impossible pour le moment."
+
+msgid "Deposited / Settled"
+msgstr "Déposé / Réglé"
+
+msgid "Approved / Captured"
+msgstr "Approuvé / Débité"
+
+msgid "CMI Status Check: Payment confirmed as captured on CMI (%s, AuthCode: %s, TransId: %s). Order status preserved (currently \"%s\")."
+msgstr "Vérification CMI : paiement bien débité sur CMI (%s, AuthCode : %s, TransId : %s). État de la commande conservé (actuellement « %s »)."
+
+msgid "CMI Status Check: Payment captured on CMI (%s, TransId: %s, AuthCode: %s, status set to %s)."
+msgstr "Vérification CMI : paiement débité sur CMI (%s, TransId : %s, AuthCode : %s, état défini sur %s)."
+
+msgid "Captured on CMI (%s, AuthCode: %s, TransId: %s). Shipment possible."
+msgstr "Débité sur CMI (%s, AuthCode : %s, TransId : %s). Expédition possible."
+
+msgid "CMI Status Check: CMI answered but did not report the transaction state (TRANS_STAT). The order was not changed; please check it in the CMI back office."
+msgstr "Vérification CMI : CMI a répondu sans indiquer l'état de la transaction (TRANS_STAT). La commande n'a pas été modifiée ; veuillez la vérifier dans le back-office CMI."
+
+msgid "Unknown"
+msgstr "Inconnu"
+
+msgid "CMI did not report the transaction state. No change was made; check the CMI back office."
+msgstr "CMI n'a pas indiqué l'état de la transaction. Aucune modification n'a été effectuée ; vérifiez dans le back-office CMI."
+
+msgid "CMI Status Check: Declined by bank (ProcReturnCode: %s, %s)."
+msgstr "Vérification CMI : refusée par la banque (ProcReturnCode : %s, %s)."
+
+msgid "CMI Status Check: Transaction declined on CMI (ProcReturnCode: %s, %s)."
+msgstr "Vérification CMI : transaction refusée sur CMI (ProcReturnCode : %s, %s)."
+
+msgid "Declined"
+msgstr "Refusée"
+
+msgid "Declined on CMI: %s (Code: %s)."
+msgstr "Refusée sur CMI : %s (code : %s)."
+
+msgid "CMI Status Check: Transaction pending confirmation by bank (PN). Transient state."
+msgstr "Vérification CMI : transaction en attente de confirmation par la banque (PN). État transitoire."
+
+msgid "Pending Bank Confirmation"
+msgstr "En attente de confirmation bancaire"
+
+msgid "Pending bank confirmation on CMI. Transient state."
+msgstr "En attente de confirmation bancaire sur CMI. État transitoire."
+
+msgid "CMI Status Check: Transaction initiated but not finalized (NW / FirstCommit)."
+msgstr "Vérification CMI : transaction lancée mais non finalisée (NW / FirstCommit)."
+
+msgid "FirstCommit"
+msgstr "FirstCommit"
+
+msgid "Transaction in progress on CMI (not finalized)."
+msgstr "Transaction en cours sur CMI (non finalisée)."
+
+msgid "CMI Status Check: Reversal required on CMI (R)."
+msgstr "Vérification CMI : contre-passation requise sur CMI (R)."
+
+msgid "Reversal Required"
+msgstr "Contre-passation requise"
+
+msgid "Reversal required on CMI."
+msgstr "Contre-passation requise sur CMI."
+
+msgid "Unexpected CMI response: %s"
+msgstr "Réponse CMI inattendue : %s"
+
+msgid "Configure the CMI API URL, username, and password in WooCommerce settings before performing API operations."
+msgstr "Configurez l'URL, le nom d'utilisateur et le mot de passe de l'API CMI dans les réglages WooCommerce avant d'effectuer des opérations API."
+
+msgid "Unknown CMI API request type."
+msgstr "Type de requête API CMI inconnu."
+
+msgid "CMI API returned HTTP error %d."
+msgstr "L'API CMI a renvoyé l'erreur HTTP %d."
+
+msgid "CMI API returned an empty response. Check your API Gateway URL in settings."
+msgstr "L'API CMI a renvoyé une réponse vide. Vérifiez l'URL de l'API dans les réglages."
+
+msgid "CMI API returned an HTML page instead of XML. Make sure the \"CMI API URL\" in plugin settings is set to the XML API endpoint (e.g. https://testpayment.cmi.co.ma/fim/api) and NOT the hosted payment page (which ends with est3Dgate)."
+msgstr "L'API CMI a renvoyé une page HTML au lieu de XML. Vérifiez que l'« URL de l'API CMI » dans les réglages de l'extension pointe vers l'API XML (par ex. https://testpayment.cmi.co.ma/fim/api) et NON vers la page de paiement hébergée (qui se termine par est3Dgate)."
+
+msgid "CMI API returned an unexpected response: %s"
+msgstr "L'API CMI a renvoyé une réponse inattendue : %s"
+
+msgid "Your CMI payment was confirmed."
+msgstr "Votre paiement CMI a été confirmé."
+
+msgid "Your payment was authorized and awaits merchant confirmation."
+msgstr "Votre paiement a été autorisé et attend la confirmation du marchand."
+
+msgid "The CMI transaction was voided by the merchant."
+msgstr "La transaction CMI a été annulée par le marchand."
+
+msgid "You cancelled the payment."
+msgstr "Vous avez annulé le paiement."
+
+msgid "The CMI payment was not completed."
+msgstr "Le paiement CMI n'a pas abouti."
+
+msgid "Amount mismatch"
+msgstr "Montant non concordant"
+
+msgid "Bad access of page"
+msgstr "Accès incorrect à la page"
+
+msgid "Security signature mismatch"
+msgstr "Signature de sécurité non concordante"
+
+msgid "requires PHP 8.3 or higher. You are running PHP %s."
+msgstr "nécessite PHP 8.3 ou supérieur. Vous utilisez PHP %s."
+
+msgid "requires WooCommerce to be active."
+msgstr "nécessite que WooCommerce soit activé."
+
+msgid "Accept card payments through CMI's secure hosted payment page."
+msgstr "Acceptez les paiements par carte via la page de paiement sécurisée hébergée par CMI."
