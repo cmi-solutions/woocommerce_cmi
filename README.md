@@ -2,6 +2,8 @@
 
 A WooCommerce payment gateway for [CMI](https://www.cmi.co.ma/) (Centre Monétique Interbancaire, Morocco). Customers pay on CMI's secure hosted page, and merchants can confirm, void, refund and check payments directly from WooCommerce.
 
+Updating from an earlier version? Read the [changelog](CHANGELOG.md) first: version 2.0.0 changes how some things work.
+
 ## Supported versions
 
 | Component | Minimum | Tested up to |
