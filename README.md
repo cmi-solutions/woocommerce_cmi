@@ -38,7 +38,7 @@ The plugin supports:
 3. Open **WooCommerce → Settings → Payments → CMI** and enter the details provided by CMI (see [Configuration](#configuration)).
 4. Before going live, test a payment, a confirmation and a refund using CMI's test environment.
 
-**Your shop must be reachable from the internet.** With Automatic confirmation, CMI contacts your shop after each payment. A site running only on your computer won't receive these messages.
+**Your shop must be reachable from the internet.** CMI contacts your shop after each payment, and in Automatic mode this is what captures the payment. A site running only on your computer won't receive these messages.
 
 **Deleting the plugin** (from the Plugins page, not just deactivating it) removes the CMI connection credentials: Client ID, Store Key, payment page URL, and API URL, username and password. Your other settings and all order data are kept, so past orders keep their payment history.
 
@@ -68,7 +68,7 @@ All settings are in **WooCommerce → Settings → Payments → CMI**. Fields ma
 | **Automatic** | The payment is captured as soon as the customer pays |
 | **Manual** | The payment is only pre-authorized: the money is reserved on the customer's card, and the order goes **On hold** until you confirm or void it |
 
-In Manual mode, the order is updated when the customer returns to your shop after paying. If the customer doesn't return:
+In both modes, CMI notifies your shop after each payment, and the order is updated automatically. If that notification doesn't reach your shop in Manual mode and the order stays **Pending**:
 
 - **Complete Kit:** the plugin checks CMI automatically about 15 minutes, 1 hour and 6 hours later, and moves the order to **On hold** if the payment is pre-authorized. These checks never confirm, void or refund a payment. You can also click **Check CMI** at any time.
 - **Standard Kit:** check the CMI back office and update the order yourself.

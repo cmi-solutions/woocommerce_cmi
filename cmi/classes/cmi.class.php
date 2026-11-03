@@ -212,7 +212,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			'confirmation_mode' => array(
 				'title' => __('Payment Confirmation', 'cmi'),
 				'type' => 'select',
-				'description' => __('<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. CMI does not call your shop\'s callback in this mode: the order is updated when the customer returns to the shop. With the Complete Kit, the plugin also checks CMI automatically if the order is still pending after 15 minutes, and you can use Check CMI at any time.', 'cmi'),
+				'description' => __('<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. If the order is still pending after 15 minutes, the plugin also checks CMI automatically (Complete Kit), and you can use Check CMI at any time.', 'cmi'),
 				'default' => 'automatic',
 				'options' => array(
 					'automatic' => __('Automatic — Capture payment immediately', 'cmi'),
@@ -957,6 +957,66 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 	}
 
 	/**
+	 * Total refunded on CMI for this order, in MAD, from ORDERHISTORY.
+	 *
+	 * @return float|null Null when CMI's history can't be read.
+	 */
+	private function get_cmi_refunded_mad(WC_Order $order): ?float
+	{
+		$history = $this->send_cmi_xml_api_request('ORDERHISTORY', $order);
+		if (is_wp_error($history)) {
+			return null;
+		}
+		$totals = Cmi_Transaction_Guard::history_totals($history['HISTORY'] ?? array());
+		return $totals['captured'] > 0 ? round($totals['refunded'] / 100, 2) : null;
+	}
+
+	/**
+	 * Record in WooCommerce the refunds made directly in the CMI back office, so the order's
+	 * refundable balance matches CMI. Nothing is sent to CMI.
+	 *
+	 * @param string[] $history ORDERHISTORY lines of this order's (verified) transaction.
+	 * @return float MAD amount newly recorded (0 when WooCommerce was already up to date).
+	 */
+	private function record_back_office_refunds(WC_Order $order, array $history): float
+	{
+		$totals = Cmi_Transaction_Guard::history_totals($history);
+		$balance = $this->get_refund_balance_mad($order);
+		if ($totals['captured'] <= 0 || $balance === null) {
+			return 0.0;
+		}
+		$missing_mad = round(min($totals['refunded'] / 100, $balance['total']) - $balance['refunded'], 2);
+		if ($missing_mad <= 0.009) {
+			return 0.0;
+		}
+
+		$remaining_order = max(0, (float) $order->get_total() - (float) $order->get_total_refunded());
+		$split = Cmi_Currency::refund_from_mad($missing_mad, $balance['remaining'], $remaining_order, $balance['rate']);
+		$refund = wc_create_refund(array(
+			'amount'         => $split['order'],
+			'reason'         => __('Refund made in the CMI back office', 'cmi'),
+			'order_id'       => $order->get_id(),
+			'refund_payment' => false,
+		));
+		if (is_wp_error($refund)) {
+			$order->add_order_note(sprintf(
+				__('CMI shows %1$s MAD refunded in the CMI back office, but WooCommerce could not record it: %2$s', 'cmi'),
+				number_format($missing_mad, 2),
+				$refund->get_error_message()
+			));
+			return 0.0;
+		}
+
+		$order->update_meta_data(self::META_REFUNDED_MAD, number_format($balance['refunded'] + $missing_mad, 2, '.', ''));
+		$order->save_meta_data();
+		$order->add_order_note(sprintf(
+			__('CMI Status Check: a refund of %s MAD made in the CMI back office was recorded in WooCommerce.', 'cmi'),
+			number_format($missing_mad, 2)
+		));
+		return $missing_mad;
+	}
+
+	/**
 	 * There are no payment fields for cmi, but we want to show the description if set.
 	 *
 	 * @since 1.0.0
@@ -1033,12 +1093,9 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			'AutoRedirect' => $this->get_option('auto_redirect', 'yes') === 'no' ? 'false' : 'true',
 			'encoding' => "UTF-8",
 		);
-		// Automatic confirmation only: the callback captures the payment. In manual confirmation
-		// the transaction stays pre-authorized until the merchant acts, and the order is updated
-		// by the customer's return, the scheduled status checks or Check CMI.
-		if ($this->confirmation_mode !== 'manual') {
-			$data['callbackUrl'] = $this->response_url;
-		}
+		// CMI calls this after each payment. The answer decides the capture: ACTION=POSTAUTH in
+		// automatic confirmation, APPROVED in manual confirmation (stays pre-authorized).
+		$data['callbackUrl'] = $this->response_url;
 		$order_currency = $order->get_currency();
 		if ($order_currency !== Cmi_Currency::MAD) {
 			$data['amount'] = number_format($mad['amount'], 2, '.', '');
@@ -1276,16 +1333,8 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			return 'APPROVED';
 		}
 
-		if ($this->has_api_configuration()) {
-			$this->set_order_payment_status($order, self::PAYMENT_STATUS_PRE_CONFIRMATION_REQUIRED, $transaction);
-			$order->update_status('on-hold', __('CMI pre-authorization received; confirming through the CMI API.', 'cmi'));
-			$result = $this->confirm_transaction($order);
-			if (is_wp_error($result)) {
-				$order->add_order_note(sprintf(__('CMI automatic API confirmation failed: %s', 'cmi'), $result->get_error_message()));
-			}
-			return 'APPROVED';
-		}
-
+		// Automatic confirmation: CMI captures the payment itself when the callback answers
+		// ACTION=POSTAUTH, with or without the API configured.
 		$target_status = $this->get_postauth_order_status();
 		$this->set_order_payment_status($order, self::PAYMENT_STATUS_CONFIRMED, $transaction);
 		$order->payment_complete($transaction['TransId'] ?? '');
@@ -1706,6 +1755,10 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 				}
 			} else {
 				echo '<span style="color:#777; font-size:12px; font-weight:600;">' . sprintf(esc_html__('Refunded (%s MAD)', 'cmi'), number_format($total_order, 2)) . '</span>';
+			}
+			// Refunds can also be made in the CMI back office: Check CMI brings them into WooCommerce
+			if ($check_btn) {
+				echo $check_btn;
 			}
 		}
 		// 3. Pending / Initiated
@@ -2922,6 +2975,15 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			if (is_wp_error($guard)) {
 				return $guard;
 			}
+			// A refund made in the CMI back office isn't in WooCommerce yet: the balance would be wrong
+			$cmi_refunded = $this->get_cmi_refunded_mad($order);
+			if ($cmi_refunded !== null && $cmi_refunded > $balance['refunded'] + 0.009) {
+				return new WP_Error('cmi_refund_out_of_sync', sprintf(
+					__('CMI shows %1$s MAD already refunded on this payment, but WooCommerce has recorded only %2$s MAD: a refund was probably made in the CMI back office. Click Check CMI to update the order, then refund the remaining balance.', 'cmi'),
+					number_format($cmi_refunded, 2),
+					number_format($balance['refunded'], 2)
+				));
+			}
 			$response = $this->credit_request($order, $split['mad']);
 			if (is_wp_error($response)) {
 				return $response;
@@ -3346,6 +3408,8 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 					);
 				}
 			}
+			// Refunds made in the CMI back office: record them so WooCommerce's balance matches CMI
+			$this->record_back_office_refunds($order, $history);
 			if ($is_partial) {
 				$this->set_order_payment_status($order, self::PAYMENT_STATUS_CONFIRMED, $response);
 				$order->add_order_note(sprintf(

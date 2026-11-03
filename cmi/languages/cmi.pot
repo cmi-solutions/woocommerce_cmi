@@ -75,7 +75,7 @@ msgid "Payment Confirmation"
 msgstr ""
 
 #: classes/cmi.class.php:215
-msgid "<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. CMI does not call your shop's callback in this mode: the order is updated when the customer returns to the shop. With the Complete Kit, the plugin also checks CMI automatically if the order is still pending after 15 minutes, and you can use Check CMI at any time."
+msgid "<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. If the order is still pending after 15 minutes, the plugin also checks CMI automatically (Complete Kit), and you can use Check CMI at any time."
 msgstr ""
 
 #: classes/cmi.class.php:218
@@ -342,794 +342,802 @@ msgstr ""
 msgid "Card payment in %s is temporarily unavailable. Please contact the store."
 msgstr ""
 
-#: classes/cmi.class.php:1083
+#: classes/cmi.class.php:997
+msgid "Refund made in the CMI back office"
+msgstr ""
+
+#: classes/cmi.class.php:1003
+msgid "CMI shows %1$s MAD refunded in the CMI back office, but WooCommerce could not record it: %2$s"
+msgstr ""
+
+#: classes/cmi.class.php:1013
+msgid "CMI Status Check: a refund of %s MAD made in the CMI back office was recorded in WooCommerce."
+msgstr ""
+
+#: classes/cmi.class.php:1140
 msgid "Thank you for your order. You will be redirected to CMI to make the payment."
 msgstr ""
 
-#: classes/cmi.class.php:1107
+#: classes/cmi.class.php:1164
 msgid "Pay via CMI"
 msgstr ""
 
-#: classes/cmi.class.php:1107
+#: classes/cmi.class.php:1164
 msgid "Cancel order"
 msgstr ""
 
-#: classes/cmi.class.php:1166
+#: classes/cmi.class.php:1223
 msgid "Thank you for your order. Please click the button below to pay with CMI."
 msgstr ""
 
-#: classes/cmi.class.php:1194
+#: classes/cmi.class.php:1251
 msgid "CMI callback does not identify a valid order."
 msgstr ""
 
-#: classes/cmi.class.php:1217
+#: classes/cmi.class.php:1274
 msgid "CMI callback signature is invalid."
 msgstr ""
 
-#: classes/cmi.class.php:1255
+#: classes/cmi.class.php:1312
 msgid "CMI callback ignored: it reports %1$s (ProcReturnCode: %2$s) but the CMI payment is already %3$s."
 msgstr ""
 
-#: classes/cmi.class.php:1256
+#: classes/cmi.class.php:1313
 msgid "an approval"
 msgstr ""
 
-#: classes/cmi.class.php:1256
+#: classes/cmi.class.php:1313
 msgid "a failure"
 msgstr ""
 
-#: classes/cmi.class.php:1257 classes/cmi.class.php:1267 classes/cmi.class.php:2967 classes/cmi.class.php:2968 classes/cmi.class.php:2977 classes/cmi.class.php:2981 classes/cmi.class.php:3034 classes/cmi.class.php:3310 classes/cmi.class.php:3311 classes/cmi.class.php:3314 classes/cmi.class.php:3320 classes/cmi.class.php:3355 classes/cmi.class.php:3369 classes/cmi.class.php:3373 classes/cmi.class.php:3379 classes/cmi.class.php:3393 classes/cmi.class.php:3394 classes/cmi.class.php:3399 classes/cmi.class.php:3400 classes/cmi.class.php:3407 classes/cmi.class.php:3407 classes/cmi.class.php:3425 classes/cmi.class.php:3426 classes/cmi.class.php:3436 classes/cmi.class.php:3437 classes/cmi.class.php:3447 classes/cmi.class.php:3447
+#: classes/cmi.class.php:1314 classes/cmi.class.php:1324 classes/cmi.class.php:3029 classes/cmi.class.php:3030 classes/cmi.class.php:3039 classes/cmi.class.php:3043 classes/cmi.class.php:3096 classes/cmi.class.php:3372 classes/cmi.class.php:3373 classes/cmi.class.php:3376 classes/cmi.class.php:3382 classes/cmi.class.php:3419 classes/cmi.class.php:3433 classes/cmi.class.php:3437 classes/cmi.class.php:3443 classes/cmi.class.php:3457 classes/cmi.class.php:3458 classes/cmi.class.php:3463 classes/cmi.class.php:3464 classes/cmi.class.php:3471 classes/cmi.class.php:3471 classes/cmi.class.php:3489 classes/cmi.class.php:3490 classes/cmi.class.php:3500 classes/cmi.class.php:3501 classes/cmi.class.php:3511 classes/cmi.class.php:3511
 msgid "N/A"
 msgstr ""
 
-#: classes/cmi.class.php:1267
+#: classes/cmi.class.php:1324
 msgid "CMI payment failed: %s (ProcReturnCode: %s)"
 msgstr ""
 
-#: classes/cmi.class.php:1267 classes/cmi.class.php:3472 classes/cmi.class.php:3478
+#: classes/cmi.class.php:1324 classes/cmi.class.php:3536 classes/cmi.class.php:3542
 msgid "Transaction declined."
 msgstr ""
 
-#: classes/cmi.class.php:1274
+#: classes/cmi.class.php:1331
 msgid "CMI pre-authorization received; manual confirmation is required."
 msgstr ""
 
-#: classes/cmi.class.php:1281
-msgid "CMI pre-authorization received; confirming through the CMI API."
-msgstr ""
-
-#: classes/cmi.class.php:1284
-msgid "CMI automatic API confirmation failed: %s"
-msgstr ""
-
-#: classes/cmi.class.php:1292
+#: classes/cmi.class.php:1341
 msgid "CMI payment confirmed and captured (status set to %s)."
 msgstr ""
 
-#: classes/cmi.class.php:1403 classes/cmi.class.php:1410 classes/cmi.class.php:3788
+#: classes/cmi.class.php:1452 classes/cmi.class.php:1459 classes/cmi.class.php:3852
 msgid "CMI payment result"
 msgstr ""
 
-#: classes/cmi.class.php:1410
+#: classes/cmi.class.php:1459
 msgid "Your payment result could not be displayed. Please check your order or contact the store."
 msgstr ""
 
-#: classes/cmi.class.php:1424
+#: classes/cmi.class.php:1473
 msgid "Invalid CMI cancellation request."
 msgstr ""
 
-#: classes/cmi.class.php:1442
+#: classes/cmi.class.php:1491
 msgid "The customer clicked Cancel on the CMI payment page, but this order has a payment on CMI or its status could not be checked (%s). The order was not cancelled. If the customer wants to cancel, void or refund the payment yourself."
 msgstr ""
 
-#: classes/cmi.class.php:1447
+#: classes/cmi.class.php:1496
 msgid "Payment was cancelled by the customer on the CMI payment page."
 msgstr ""
 
-#: classes/cmi.class.php:1465
+#: classes/cmi.class.php:1514
 msgid "Continue to your order"
 msgstr ""
 
-#: classes/cmi.class.php:1606
+#: classes/cmi.class.php:1655
 msgid "Charged by CMI:"
 msgstr ""
 
-#: classes/cmi.class.php:1612
+#: classes/cmi.class.php:1661
 msgid "Refunded via CMI: %s MAD"
 msgstr ""
 
-#: classes/cmi.class.php:1631 classes/cmi.class.php:1635
+#: classes/cmi.class.php:1680 classes/cmi.class.php:1684
 msgid "CMI Actions"
 msgstr ""
 
-#: classes/cmi.class.php:1661
+#: classes/cmi.class.php:1710
 msgid "Query payment status from CMI XML API"
 msgstr ""
 
-#: classes/cmi.class.php:1661
+#: classes/cmi.class.php:1710
 msgid "Check CMI"
 msgstr ""
 
-#: classes/cmi.class.php:1673
+#: classes/cmi.class.php:1722
 msgid "Confirm and capture this PRE transaction via CMI API (PostAuth)"
 msgstr ""
 
-#: classes/cmi.class.php:1673
+#: classes/cmi.class.php:1722
 msgid "Confirm"
 msgstr ""
 
-#: classes/cmi.class.php:1674
+#: classes/cmi.class.php:1723
 msgid "Void and cancel this PRE transaction via CMI API (Void)"
 msgstr ""
 
-#: classes/cmi.class.php:1674
+#: classes/cmi.class.php:1723
 msgid "Void"
 msgstr ""
 
-#: classes/cmi.class.php:1692
+#: classes/cmi.class.php:1741
 msgid "The MAD amount charged by CMI was not recorded for this older order."
 msgstr ""
 
-#: classes/cmi.class.php:1692
+#: classes/cmi.class.php:1741
 msgid "Refund from CMI back office"
 msgstr ""
 
-#: classes/cmi.class.php:1696
+#: classes/cmi.class.php:1745
 msgid "Refund (%s MAD)"
 msgstr ""
 
-#: classes/cmi.class.php:1697 classes/cmi.class.php:1705
+#: classes/cmi.class.php:1746 classes/cmi.class.php:1754
 msgid "Refund"
 msgstr ""
 
-#: classes/cmi.class.php:1701
+#: classes/cmi.class.php:1750
 msgid "Refunded: %s MAD"
 msgstr ""
 
-#: classes/cmi.class.php:1702
+#: classes/cmi.class.php:1751
 msgid "Refund remaining balance (%s MAD) via CMI API (Credit)"
 msgstr ""
 
-#: classes/cmi.class.php:1705
+#: classes/cmi.class.php:1754
 msgid "Refund this transaction (Full or Partial) via CMI API (Credit)"
 msgstr ""
 
-#: classes/cmi.class.php:1708
+#: classes/cmi.class.php:1757
 msgid "Refunded (%s MAD)"
 msgstr ""
 
-#: classes/cmi.class.php:1716
+#: classes/cmi.class.php:1769
 msgid "Pending"
 msgstr ""
 
-#: classes/cmi.class.php:1721 classes/cmi.class.php:3318
+#: classes/cmi.class.php:1774 classes/cmi.class.php:3380
 msgid "Voided"
 msgstr ""
 
-#: classes/cmi.class.php:1728
+#: classes/cmi.class.php:1781
 msgid "Cancelled"
 msgstr ""
 
-#: classes/cmi.class.php:1735
+#: classes/cmi.class.php:1788
 msgid "Failed"
 msgstr ""
 
-#: classes/cmi.class.php:1770
+#: classes/cmi.class.php:1823
 msgid "Processing"
 msgstr ""
 
-#: classes/cmi.class.php:1771
+#: classes/cmi.class.php:1824
 msgid "Confirmed"
 msgstr ""
 
-#: classes/cmi.class.php:1772
+#: classes/cmi.class.php:1825
 msgid "On-hold"
 msgstr ""
 
-#: classes/cmi.class.php:1773
+#: classes/cmi.class.php:1826
 msgid "Completed"
 msgstr ""
 
-#: classes/cmi.class.php:1774
+#: classes/cmi.class.php:1827
 msgid "Custom (specify below)"
 msgstr ""
 
-#: classes/cmi.class.php:1818 classes/cmi.class.php:1859 classes/cmi.class.php:1928 classes/cmi.class.php:1975 classes/cmi.class.php:1979
+#: classes/cmi.class.php:1871 classes/cmi.class.php:1912 classes/cmi.class.php:1981 classes/cmi.class.php:2028 classes/cmi.class.php:2032
 msgctxt "Order status"
 msgid "Confirmed"
 msgstr ""
 
-#: classes/cmi.class.php:1836
+#: classes/cmi.class.php:1889
 msgid "CMI: the Store Key was not saved because it must not contain the word \"SKS\". The previous key was kept."
 msgstr ""
 
-#: classes/cmi.class.php:1864 classes/cmi.class.php:1933
+#: classes/cmi.class.php:1917 classes/cmi.class.php:1986
 msgid "Confirmed <span class=\"count\">(%s)</span>"
 msgid_plural "Confirmed <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#: classes/cmi.class.php:2090
+#: classes/cmi.class.php:2143
 msgid "Query status via CMI API"
 msgstr ""
 
-#: classes/cmi.class.php:2092
+#: classes/cmi.class.php:2145
 msgid "Confirm CMI PRE transaction"
 msgstr ""
 
-#: classes/cmi.class.php:2093
+#: classes/cmi.class.php:2146
 msgid "Void CMI PRE transaction"
 msgstr ""
 
-#: classes/cmi.class.php:2095 classes/cmi.class.php:2937
+#: classes/cmi.class.php:2148 classes/cmi.class.php:2999
 msgid "Refund via CMI API"
 msgstr ""
 
-#: classes/cmi.class.php:2111
+#: classes/cmi.class.php:2164
 msgid "Confirm CMI transaction"
 msgstr ""
 
-#: classes/cmi.class.php:2116
+#: classes/cmi.class.php:2169
 msgid "Void CMI transaction"
 msgstr ""
 
-#: classes/cmi.class.php:2195
+#: classes/cmi.class.php:2248
 msgid "CMI cancellation (Void)"
 msgstr ""
 
-#: classes/cmi.class.php:2195 classes/cmi.class.php:2232 classes/cmi.class.php:2257
+#: classes/cmi.class.php:2248 classes/cmi.class.php:2285 classes/cmi.class.php:2310
 msgid "Order"
 msgstr ""
 
-#: classes/cmi.class.php:2197 classes/cmi.class.php:2234 classes/cmi.class.php:2259
+#: classes/cmi.class.php:2250 classes/cmi.class.php:2287 classes/cmi.class.php:2312
 msgid "Close"
 msgstr ""
 
-#: classes/cmi.class.php:2205
+#: classes/cmi.class.php:2258
 msgid "⚠️ Warning: this action cannot be undone!"
 msgstr ""
 
-#: classes/cmi.class.php:2207
+#: classes/cmi.class.php:2260
 msgid "The CMI payment authorization will be permanently cancelled with the customer's bank."
 msgstr ""
 
-#: classes/cmi.class.php:2208
+#: classes/cmi.class.php:2261
 msgid "The funds held on the customer's card will be released immediately."
 msgstr ""
 
-#: classes/cmi.class.php:2209
+#: classes/cmi.class.php:2262
 msgid "This order can never be confirmed or charged later."
 msgstr ""
 
-#: classes/cmi.class.php:2215
+#: classes/cmi.class.php:2268
 msgid "Are you sure you want to permanently cancel this CMI pre-authorization?"
 msgstr ""
 
-#: classes/cmi.class.php:2221
+#: classes/cmi.class.php:2274
 msgid "Keep the order"
 msgstr ""
 
-#: classes/cmi.class.php:2223 classes/cmi.class.php:2409
+#: classes/cmi.class.php:2276 classes/cmi.class.php:2462
 msgid "Confirm cancellation (cannot be undone)"
 msgstr ""
 
-#: classes/cmi.class.php:2232
+#: classes/cmi.class.php:2285
 msgid "Confirm this payment?"
 msgstr ""
 
-#: classes/cmi.class.php:2241
+#: classes/cmi.class.php:2294
 msgid "We recommend informing the customer before you confirm. A charge they no longer expect can lead to a chargeback later."
 msgstr ""
 
-#: classes/cmi.class.php:2246
+#: classes/cmi.class.php:2299
 msgid "Go back"
 msgstr ""
 
-#: classes/cmi.class.php:2247 classes/cmi.class.php:2371
+#: classes/cmi.class.php:2300 classes/cmi.class.php:2424
 msgid "Confirm anyway"
 msgstr ""
 
-#: classes/cmi.class.php:2257
+#: classes/cmi.class.php:2310
 msgid "CMI API Refund"
 msgstr ""
 
-#: classes/cmi.class.php:2268
+#: classes/cmi.class.php:2321
 msgid "⚠️ Warning: this action cannot be undone"
 msgstr ""
 
-#: classes/cmi.class.php:2269
+#: classes/cmi.class.php:2322
 msgid "A refund through the CMI API is immediate and final. The funds will be returned to the customer and this action cannot be undone."
 msgstr ""
 
-#: classes/cmi.class.php:2275
+#: classes/cmi.class.php:2328
 msgid "Total Order Amount:"
 msgstr ""
 
-#: classes/cmi.class.php:2279
+#: classes/cmi.class.php:2332
 msgid "Already Refunded:"
 msgstr ""
 
-#: classes/cmi.class.php:2283
+#: classes/cmi.class.php:2336
 msgid "Available Refundable Balance:"
 msgstr ""
 
-#: classes/cmi.class.php:2291
+#: classes/cmi.class.php:2344
 msgid "Refund Remaining Balance"
 msgstr ""
 
-#: classes/cmi.class.php:2295
+#: classes/cmi.class.php:2348
 msgid "Custom Partial Amount"
 msgstr ""
 
-#: classes/cmi.class.php:2301
+#: classes/cmi.class.php:2354
 msgid "Enter partial amount to refund (MAD):"
 msgstr ""
 
-#: classes/cmi.class.php:2311
+#: classes/cmi.class.php:2364
 msgid "Refund Reason (Optional):"
 msgstr ""
 
-#: classes/cmi.class.php:2313
+#: classes/cmi.class.php:2366
 msgid "e.g. Customer request / Item returned"
 msgstr ""
 
-#: classes/cmi.class.php:2321
+#: classes/cmi.class.php:2374
 msgid "Cancel"
 msgstr ""
 
-#: classes/cmi.class.php:2323 classes/cmi.class.php:2455
+#: classes/cmi.class.php:2376 classes/cmi.class.php:2508
 msgid "Confirm refund (cannot be undone)"
 msgstr ""
 
-#: classes/cmi.class.php:2350
+#: classes/cmi.class.php:2403
 msgid "This payment was pre-authorized %d days ago."
 msgstr ""
 
-#: classes/cmi.class.php:2390
+#: classes/cmi.class.php:2443
 msgid "Confirming via CMI API..."
 msgstr ""
 
-#: classes/cmi.class.php:2429
+#: classes/cmi.class.php:2482
 msgid "Cancelling via the CMI API..."
 msgstr ""
 
-#: classes/cmi.class.php:2458
+#: classes/cmi.class.php:2511
 msgid "Refund the remaining balance"
 msgstr ""
 
-#: classes/cmi.class.php:2459
+#: classes/cmi.class.php:2512
 msgid "Full refund"
 msgstr ""
 
-#: classes/cmi.class.php:2500
+#: classes/cmi.class.php:2553
 msgid "Please enter a valid positive number for the refund amount."
 msgstr ""
 
-#: classes/cmi.class.php:2507
+#: classes/cmi.class.php:2560
 msgid "Refund amount cannot exceed the available balance of "
 msgstr ""
 
-#: classes/cmi.class.php:2528
+#: classes/cmi.class.php:2581
 msgid "Processing the refund via the CMI API..."
 msgstr ""
 
-#: classes/cmi.class.php:2585
+#: classes/cmi.class.php:2638
 msgid "We recommend informing the customer before you confirm. A charge they no longer expect can lead to a chargeback later. Confirm anyway?"
 msgstr ""
 
-#: classes/cmi.class.php:2597
+#: classes/cmi.class.php:2650
 msgid "⚠️ Warning: a CMI cancellation (Void) cannot be undone. The authorization will be permanently cancelled with the bank and can never be charged. Confirm?"
 msgstr ""
 
-#: classes/cmi.class.php:2602
+#: classes/cmi.class.php:2655
 msgid "⚠️ Warning: a refund through the CMI API cannot be undone. The funds will be returned to the customer immediately and permanently. Confirm?"
 msgstr ""
 
-#: classes/cmi.class.php:2652 classes/cmi.class.php:2683 classes/cmi.class.php:2714 classes/cmi.class.php:2778
+#: classes/cmi.class.php:2705 classes/cmi.class.php:2736 classes/cmi.class.php:2767 classes/cmi.class.php:2831
 msgid "You do not have permission to manage WooCommerce orders."
 msgstr ""
 
-#: classes/cmi.class.php:2659 classes/cmi.class.php:2690 classes/cmi.class.php:2721 classes/cmi.class.php:2785
+#: classes/cmi.class.php:2712 classes/cmi.class.php:2743 classes/cmi.class.php:2774 classes/cmi.class.php:2838
 msgid "Invalid order ID."
 msgstr ""
 
-#: classes/cmi.class.php:2667
+#: classes/cmi.class.php:2720
 msgid "CMI confirmation failed for order #%d: %s"
 msgstr ""
 
-#: classes/cmi.class.php:2672
+#: classes/cmi.class.php:2725
 msgid "Order #%d confirmed successfully via CMI API."
 msgstr ""
 
-#: classes/cmi.class.php:2698
+#: classes/cmi.class.php:2751
 msgid "CMI void/cancellation failed for order #%d: %s"
 msgstr ""
 
-#: classes/cmi.class.php:2703
+#: classes/cmi.class.php:2756
 msgid "Order #%d voided and cancelled successfully via CMI API."
 msgstr ""
 
-#: classes/cmi.class.php:2732
+#: classes/cmi.class.php:2785
 msgid "CMI refund failed for order #%d: %s"
 msgstr ""
 
-#: classes/cmi.class.php:2741
+#: classes/cmi.class.php:2794
 msgid "Partial refund for order #%1$d processed successfully via CMI API. Refunded: %2$s MAD (remaining refundable: %3$s MAD)."
 msgstr ""
 
-#: classes/cmi.class.php:2742
+#: classes/cmi.class.php:2795
 msgid "Order #%1$d fully refunded successfully via CMI API (%2$s MAD)."
 msgstr ""
 
-#: classes/cmi.class.php:2772
+#: classes/cmi.class.php:2825
 msgid "CMI Status Check result: [%s] %s"
 msgstr ""
 
-#: classes/cmi.class.php:2795
+#: classes/cmi.class.php:2848
 msgid "CMI status for order #%d: [%s] %s"
 msgstr ""
 
-#: classes/cmi.class.php:2810
+#: classes/cmi.class.php:2863
 msgid "CMI confirmation failed: %s"
 msgstr ""
 
-#: classes/cmi.class.php:2822
+#: classes/cmi.class.php:2875
 msgid "CMI void/cancellation failed: %s"
 msgstr ""
 
-#: classes/cmi.class.php:2834
+#: classes/cmi.class.php:2887
 msgid "CMI refund failed: %s"
 msgstr ""
 
-#: classes/cmi.class.php:2842
+#: classes/cmi.class.php:2895
 msgid "Order not found."
 msgstr ""
 
-#: classes/cmi.class.php:2859 classes/cmi.class.php:2998 classes/cmi.class.php:3047
+#: classes/cmi.class.php:2912 classes/cmi.class.php:3060 classes/cmi.class.php:3109
 msgid "This order was not paid with CMI."
 msgstr ""
 
-#: classes/cmi.class.php:2862
+#: classes/cmi.class.php:2915
 msgid "Configure the CMI API URL, username, and password before issuing refunds."
 msgstr ""
 
-#: classes/cmi.class.php:2877
+#: classes/cmi.class.php:2930
 msgid "This order was paid in another currency before the plugin recorded the MAD amount charged by CMI, so the exact refund amount cannot be calculated. Please refund it from the CMI back office."
 msgstr ""
 
-#: classes/cmi.class.php:2884 classes/cmi.class.php:2891
+#: classes/cmi.class.php:2937 classes/cmi.class.php:2944
 msgid "Invalid refund amount."
 msgstr ""
 
-#: classes/cmi.class.php:2897
+#: classes/cmi.class.php:2950
 msgid "Refund amount (%s MAD) exceeds remaining balance (%s MAD)."
 msgstr ""
 
-#: classes/cmi.class.php:2906
+#: classes/cmi.class.php:2959
 msgid "Nothing is left to refund on this order."
 msgstr ""
 
-#: classes/cmi.class.php:2917 classes/cmi.class.php:3016
+#: classes/cmi.class.php:2970 classes/cmi.class.php:3078
 msgid "An operation is already in progress for this order."
 msgstr ""
 
-#: classes/cmi.class.php:2930
+#: classes/cmi.class.php:2982
+msgid "CMI shows %1$s MAD already refunded on this payment, but WooCommerce has recorded only %2$s MAD: a refund was probably made in the CMI back office. Click Check CMI to update the order, then refund the remaining balance."
+msgstr ""
+
+#: classes/cmi.class.php:2992
 msgid "CMI rejected the refund request."
 msgstr ""
 
-#: classes/cmi.class.php:2945
+#: classes/cmi.class.php:3007
 msgid "CMI refunded %1$s MAD, but WooCommerce could not record the refund: %2$s. Please add it manually with \"Refund manually\"."
 msgstr ""
 
-#: classes/cmi.class.php:2964
+#: classes/cmi.class.php:3026
 msgid "Order fully refunded via CMI API: %1$s MAD%2$s (TransId: %3$s). Reason: %4$s"
 msgstr ""
 
-#: classes/cmi.class.php:2974
+#: classes/cmi.class.php:3036
 msgid "Partial refund processed via CMI API: %1$s MAD%2$s (TransId: %3$s). Total refunded: %4$s / %5$s MAD (Remaining: %6$s MAD). Reason: %7$s"
 msgstr ""
 
-#: classes/cmi.class.php:3004
+#: classes/cmi.class.php:3066
 msgid "Only a CMI PRE transaction can be voided. Confirmed POST transactions must be refunded."
 msgstr ""
 
-#: classes/cmi.class.php:3007
+#: classes/cmi.class.php:3069
 msgid "Configure the CMI API URL, username, and password before cancelling PRE transactions."
 msgstr ""
 
-#: classes/cmi.class.php:3029
+#: classes/cmi.class.php:3091
 msgid "CMI rejected the void request."
 msgstr ""
 
-#: classes/cmi.class.php:3034
+#: classes/cmi.class.php:3096
 msgid "CMI PRE transaction voided via CMI API (TransId: %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3054
+#: classes/cmi.class.php:3116
 msgid "Only a CMI PRE transaction can be confirmed."
 msgstr ""
 
-#: classes/cmi.class.php:3057
+#: classes/cmi.class.php:3119
 msgid "Configure the CMI API URL, username, and password before confirming PRE transactions."
 msgstr ""
 
-#: classes/cmi.class.php:3066
+#: classes/cmi.class.php:3128
 msgid "A confirmation attempt is already in progress for this order."
 msgstr ""
 
-#: classes/cmi.class.php:3080
+#: classes/cmi.class.php:3142
 msgid "CMI rejected the confirmation request."
 msgstr ""
 
-#: classes/cmi.class.php:3087
+#: classes/cmi.class.php:3149
 msgid "CMI PRE transaction confirmed and captured through the CMI API (status set to %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3111 classes/cmi.class.php:3133
+#: classes/cmi.class.php:3173 classes/cmi.class.php:3195
 msgid "Could not verify the transaction with CMI, so no request was sent: %s"
 msgstr ""
 
-#: classes/cmi.class.php:3115
+#: classes/cmi.class.php:3177
 msgid "Order ID %s was not found in the CMI back office. No request was sent to CMI."
 msgstr ""
 
-#: classes/cmi.class.php:3141
+#: classes/cmi.class.php:3203
 msgid "The CMI transaction for order ID %s cannot be matched to this order (no payment confirmation or amount was recorded). No request was sent to CMI; please manage it from the CMI back office."
 msgstr ""
 
-#: classes/cmi.class.php:3142
+#: classes/cmi.class.php:3204
 msgid "Order ID %s exists in the CMI back office but belongs to another transaction, not to this order's payment. No request was sent to CMI."
 msgstr ""
 
-#: classes/cmi.class.php:3169
+#: classes/cmi.class.php:3231
 msgid "CMI does not show an active pre-authorization for this order, so it cannot be confirmed or voided."
 msgstr ""
 
-#: classes/cmi.class.php:3170
+#: classes/cmi.class.php:3232
 msgid "This payment is already captured on CMI. Use Refund instead."
 msgstr ""
 
-#: classes/cmi.class.php:3171
+#: classes/cmi.class.php:3233
 msgid "This payment is not captured on CMI, so it cannot be refunded. Void the pre-authorization instead."
 msgstr ""
 
-#: classes/cmi.class.php:3172
+#: classes/cmi.class.php:3234
 msgid "This transaction is already voided on CMI."
 msgstr ""
 
-#: classes/cmi.class.php:3173
+#: classes/cmi.class.php:3235
 msgid "CMI did not report the transaction state, so no request was sent. Please check the order in the CMI back office."
 msgstr ""
 
-#: classes/cmi.class.php:3199
+#: classes/cmi.class.php:3261
 msgid "The order status was updated to match CMI."
 msgstr ""
 
-#: classes/cmi.class.php:3237
+#: classes/cmi.class.php:3299
 msgid "Order was not placed using CMI."
 msgstr ""
 
-#: classes/cmi.class.php:3241
+#: classes/cmi.class.php:3303
 msgid "CMI XML API credentials not configured."
 msgstr ""
 
-#: classes/cmi.class.php:3254
+#: classes/cmi.class.php:3316
 msgid "CMI Status Check: No transaction record found on CMI (%s)."
 msgstr ""
 
-#: classes/cmi.class.php:3254
+#: classes/cmi.class.php:3316
 msgid "Not found"
 msgstr ""
 
-#: classes/cmi.class.php:3257
+#: classes/cmi.class.php:3319
 msgid "Not Found"
 msgstr ""
 
-#: classes/cmi.class.php:3258
+#: classes/cmi.class.php:3320
 msgid "No transaction record found on CMI (Customer likely abandoned the checkout)."
 msgstr ""
 
-#: classes/cmi.class.php:3263
+#: classes/cmi.class.php:3325
 msgid "Not this order"
 msgstr ""
 
-#: classes/cmi.class.php:3309
+#: classes/cmi.class.php:3371
 msgid "CMI Status Check: Transaction is VOIDED / Cancelled on CMI (TransId: %s, AuthCode: %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3314
+#: classes/cmi.class.php:3376
 msgid "CMI Status Check: Transaction confirmed as VOIDED on CMI (TransId: %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3320
+#: classes/cmi.class.php:3382
 msgid "Transaction voided on CMI (TransId: %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3352
+#: classes/cmi.class.php:3416
 msgid "CMI Status Check: Payment partially refunded on CMI (refunded %1$s of %2$s MAD, TransId: %3$s). Order status kept."
 msgstr ""
 
-#: classes/cmi.class.php:3359
+#: classes/cmi.class.php:3423
 msgid "Partially credited"
 msgstr ""
 
-#: classes/cmi.class.php:3361
+#: classes/cmi.class.php:3425
 msgid "Payment partially refunded on CMI (%1$s of %2$s MAD)."
 msgstr ""
 
-#: classes/cmi.class.php:3368
+#: classes/cmi.class.php:3432
 msgid "CMI Status Check: Transaction was refunded / credited on CMI (TransId: %s, Amount: %s MAD)."
 msgstr ""
 
-#: classes/cmi.class.php:3373
+#: classes/cmi.class.php:3437
 msgid "CMI Status Check: Transaction confirmed as REFUNDED on CMI (TransId: %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3377
+#: classes/cmi.class.php:3441
 msgid "Credited"
 msgstr ""
 
-#: classes/cmi.class.php:3379
+#: classes/cmi.class.php:3443
 msgid "Payment refunded on CMI (TransId: %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3392
+#: classes/cmi.class.php:3456
 msgid "CMI Status Check: Pre-authorization verified on CMI (Status: Approved / Pre-auth, AuthCode: %s, TransId: %s). Order is on-hold awaiting capture. Shipment not possible yet."
 msgstr ""
 
-#: classes/cmi.class.php:3398
+#: classes/cmi.class.php:3462
 msgid "CMI Status Check: Pre-authorization confirmed on CMI (Status: Approved / Pre-auth, AuthCode: %s, TransId: %s). Order remains on-hold awaiting capture."
 msgstr ""
 
-#: classes/cmi.class.php:3405
+#: classes/cmi.class.php:3469
 msgid "Approved (preauthorization)"
 msgstr ""
 
-#: classes/cmi.class.php:3407
+#: classes/cmi.class.php:3471
 msgid "Pre-authorized on CMI (AuthCode: %s, TransId: %s). Awaiting capture; shipment not possible yet."
 msgstr ""
 
-#: classes/cmi.class.php:3416
+#: classes/cmi.class.php:3480
 msgid "Deposited / Settled"
 msgstr ""
 
-#: classes/cmi.class.php:3416
+#: classes/cmi.class.php:3480
 msgid "Approved / Captured"
 msgstr ""
 
-#: classes/cmi.class.php:3423
+#: classes/cmi.class.php:3487
 msgid "CMI Status Check: Payment confirmed as captured on CMI (%s, AuthCode: %s, TransId: %s). Order status preserved (currently \"%s\")."
 msgstr ""
 
-#: classes/cmi.class.php:3434
+#: classes/cmi.class.php:3498
 msgid "CMI Status Check: Payment captured on CMI (%s, TransId: %s, AuthCode: %s, status set to %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3447
+#: classes/cmi.class.php:3511
 msgid "Captured on CMI (%s, AuthCode: %s, TransId: %s). Shipment possible."
 msgstr ""
 
-#: classes/cmi.class.php:3454
+#: classes/cmi.class.php:3518
 msgid "CMI Status Check: CMI answered but did not report the transaction state (TRANS_STAT). The order was not changed; please check it in the CMI back office."
 msgstr ""
 
-#: classes/cmi.class.php:3457
+#: classes/cmi.class.php:3521
 msgid "Unknown"
 msgstr ""
 
-#: classes/cmi.class.php:3458
+#: classes/cmi.class.php:3522
 msgid "CMI did not report the transaction state. No change was made; check the CMI back office."
 msgstr ""
 
-#: classes/cmi.class.php:3470
+#: classes/cmi.class.php:3534
 msgid "CMI Status Check: Declined by bank (ProcReturnCode: %s, %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3476
+#: classes/cmi.class.php:3540
 msgid "CMI Status Check: Transaction declined on CMI (ProcReturnCode: %s, %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3483 classes/cmi.class.php:3485
+#: classes/cmi.class.php:3547 classes/cmi.class.php:3549
 msgid "Declined"
 msgstr ""
 
-#: classes/cmi.class.php:3485
+#: classes/cmi.class.php:3549
 msgid "Declined on CMI: %s (Code: %s)."
 msgstr ""
 
-#: classes/cmi.class.php:3493
+#: classes/cmi.class.php:3557
 msgid "CMI Status Check: Transaction pending confirmation by bank (PN). Transient state."
 msgstr ""
 
-#: classes/cmi.class.php:3496
+#: classes/cmi.class.php:3560
 msgid "Pending Bank Confirmation"
 msgstr ""
 
-#: classes/cmi.class.php:3498
+#: classes/cmi.class.php:3562
 msgid "Pending bank confirmation on CMI. Transient state."
 msgstr ""
 
-#: classes/cmi.class.php:3502
+#: classes/cmi.class.php:3566
 msgid "CMI Status Check: Transaction initiated but not finalized (NW / FirstCommit)."
 msgstr ""
 
-#: classes/cmi.class.php:3505
+#: classes/cmi.class.php:3569
 msgid "FirstCommit"
 msgstr ""
 
-#: classes/cmi.class.php:3507
+#: classes/cmi.class.php:3571
 msgid "Transaction in progress on CMI (not finalized)."
 msgstr ""
 
-#: classes/cmi.class.php:3511
+#: classes/cmi.class.php:3575
 msgid "CMI Status Check: Reversal required on CMI (R)."
 msgstr ""
 
-#: classes/cmi.class.php:3514
+#: classes/cmi.class.php:3578
 msgid "Reversal Required"
 msgstr ""
 
-#: classes/cmi.class.php:3516
+#: classes/cmi.class.php:3580
 msgid "Reversal required on CMI."
 msgstr ""
 
-#: classes/cmi.class.php:3522
+#: classes/cmi.class.php:3586
 msgid "Unexpected CMI response: %s"
 msgstr ""
 
-#: classes/cmi.class.php:3529
+#: classes/cmi.class.php:3593
 msgid "Configure the CMI API URL, username, and password in WooCommerce settings before performing API operations."
 msgstr ""
 
-#: classes/cmi.class.php:3604
+#: classes/cmi.class.php:3668
 msgid "Unknown CMI API request type."
 msgstr ""
 
-#: classes/cmi.class.php:3637
+#: classes/cmi.class.php:3701
 msgid "CMI API returned HTTP error %d."
 msgstr ""
 
-#: classes/cmi.class.php:3647
+#: classes/cmi.class.php:3711
 msgid "CMI API returned an empty response. Check your API Gateway URL in settings."
 msgstr ""
 
-#: classes/cmi.class.php:3654
+#: classes/cmi.class.php:3718
 msgid "CMI API returned an HTML page instead of XML. Make sure the \"CMI API URL\" in plugin settings is set to the XML API endpoint (e.g. https://testpayment.cmi.co.ma/fim/api) and NOT the hosted payment page (which ends with est3Dgate)."
 msgstr ""
 
-#: classes/cmi.class.php:3760
+#: classes/cmi.class.php:3824
 msgid "CMI API returned an unexpected response: %s"
 msgstr ""
 
-#: classes/cmi.class.php:3780
+#: classes/cmi.class.php:3844
 msgid "Your CMI payment was confirmed."
 msgstr ""
 
-#: classes/cmi.class.php:3782
+#: classes/cmi.class.php:3846
 msgid "Your payment was authorized and awaits merchant confirmation."
 msgstr ""
 
-#: classes/cmi.class.php:3784
+#: classes/cmi.class.php:3848
 msgid "The CMI transaction was voided by the merchant."
 msgstr ""
 
-#: classes/cmi.class.php:3786
+#: classes/cmi.class.php:3850
 msgid "You cancelled the payment."
 msgstr ""
 
-#: classes/cmi.class.php:3787
+#: classes/cmi.class.php:3851
 msgid "The CMI payment was not completed."
 msgstr ""
 
-#: classes/cmi.class.php:3845
+#: classes/cmi.class.php:3909
 msgid "Amount mismatch"
 msgstr ""
 
-#: classes/cmi.class.php:3848
+#: classes/cmi.class.php:3912
 msgid "Bad access of page"
 msgstr ""
 
-#: classes/cmi.class.php:3851
+#: classes/cmi.class.php:3915
 msgid "Security signature mismatch"
 msgstr ""
 

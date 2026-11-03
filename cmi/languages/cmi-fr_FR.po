@@ -59,8 +59,8 @@ msgstr "Kit Complet — Avec gestion par API (Confirmer, Annuler, Rembourser)"
 msgid "Payment Confirmation"
 msgstr "Confirmation du paiement"
 
-msgid "<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. CMI does not call your shop's callback in this mode: the order is updated when the customer returns to the shop. With the Complete Kit, the plugin also checks CMI automatically if the order is still pending after 15 minutes, and you can use Check CMI at any time."
-msgstr "<strong>Automatique</strong> — Le paiement est débité immédiatement lorsque le client finalise sa commande via le callback.<br><strong>Manuelle</strong> — Le paiement est seulement autorisé (pré-autorisation). Vous devez le confirmer manuellement pour débiter les fonds : depuis la liste des commandes avec le Kit Complet (API), ou depuis le back-office CMI avec le Kit Standard. Dans ce mode, CMI n'appelle pas le callback de votre boutique : la commande est mise à jour au retour du client sur la boutique. Avec le Kit Complet, l'extension vérifie aussi automatiquement CMI si la commande est toujours en attente de paiement après 15 minutes, et vous pouvez utiliser Vérifier CMI à tout moment."
+msgid "<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. If the order is still pending after 15 minutes, the plugin also checks CMI automatically (Complete Kit), and you can use Check CMI at any time."
+msgstr "<strong>Automatique</strong> — Le paiement est débité immédiatement lorsque le client finalise sa commande via le callback.<br><strong>Manuelle</strong> — Le paiement est seulement autorisé (pré-autorisation). Vous devez le confirmer manuellement pour débiter les fonds : depuis la liste des commandes avec le Kit Complet (API), ou depuis le back-office CMI avec le Kit Standard. Si la commande est toujours en attente de paiement après 15 minutes, l'extension vérifie aussi automatiquement CMI (Kit Complet), et vous pouvez utiliser Vérifier CMI à tout moment."
 
 msgid "Automatic — Capture payment immediately"
 msgstr "Automatique — Débiter le paiement immédiatement"
@@ -301,12 +301,6 @@ msgstr "Transaction refusée."
 
 msgid "CMI pre-authorization received; manual confirmation is required."
 msgstr "Pré-autorisation CMI reçue ; une confirmation manuelle est requise."
-
-msgid "CMI pre-authorization received; confirming through the CMI API."
-msgstr "Pré-autorisation CMI reçue ; confirmation en cours via l'API CMI."
-
-msgid "CMI automatic API confirmation failed: %s"
-msgstr "Échec de la confirmation automatique via l'API CMI : %s"
 
 msgid "CMI payment confirmed and captured (status set to %s)."
 msgstr "Paiement CMI confirmé et débité (état défini sur %s)."
@@ -607,6 +601,18 @@ msgstr "Montant de remboursement non valide."
 
 msgid "Refund amount (%s MAD) exceeds remaining balance (%s MAD)."
 msgstr "Le montant du remboursement (%s MAD) dépasse le solde restant (%s MAD)."
+
+msgid "CMI shows %1$s MAD already refunded on this payment, but WooCommerce has recorded only %2$s MAD: a refund was probably made in the CMI back office. Click Check CMI to update the order, then refund the remaining balance."
+msgstr "CMI indique %1$s MAD déjà remboursés sur ce paiement, mais WooCommerce n'en a enregistré que %2$s MAD : un remboursement a probablement été effectué dans le back-office CMI. Cliquez sur Vérifier CMI pour mettre à jour la commande, puis remboursez le solde restant."
+
+msgid "Refund made in the CMI back office"
+msgstr "Remboursement effectué dans le back-office CMI"
+
+msgid "CMI shows %1$s MAD refunded in the CMI back office, but WooCommerce could not record it: %2$s"
+msgstr "CMI indique %1$s MAD remboursés dans le back-office CMI, mais WooCommerce n'a pas pu l'enregistrer : %2$s"
+
+msgid "CMI Status Check: a refund of %s MAD made in the CMI back office was recorded in WooCommerce."
+msgstr "Vérification CMI : un remboursement de %s MAD effectué dans le back-office CMI a été enregistré dans WooCommerce."
 
 msgid "Nothing is left to refund on this order."
 msgstr "Il ne reste rien à rembourser sur cette commande."
