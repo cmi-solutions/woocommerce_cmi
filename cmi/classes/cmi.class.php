@@ -2133,22 +2133,11 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		if ($order->get_payment_method() !== 'cmi') {
 			return false;
 		}
-		$custom_target = self::get_gateway_instance()->get_postauth_order_status();
-		if (in_array($order->get_status(), array('processing', 'completed', 'confirmed', 'refunded', 'cancelled', 'failed', $custom_target), true)) {
-			return false;
-		}
-		$status = (string) $order->get_meta(self::PAYMENT_STATUS_META_KEY, true);
-		if ($status === self::PAYMENT_STATUS_CONFIRMED || $status === self::PAYMENT_STATUS_FAILED || $status === self::PAYMENT_STATUS_CLIENT_CANCELLED || $status === self::PAYMENT_STATUS_VOIDED) {
-			return false;
-		}
-		if (Cmi_Payment_State::can_confirm($status)) {
-			return true;
-		}
-		// Only orders placed on-hold or pending with pre-authorization are eligible
-		if ($order->has_status(array('on-hold', 'pending'))) {
-			return true;
-		}
-		return false;
+		return Cmi_Payment_State::can_offer_confirmation(
+			(string) $order->get_meta(self::PAYMENT_STATUS_META_KEY, true),
+			$order->get_status(),
+			self::get_gateway_instance()->get_postauth_order_status()
+		);
 	}
 
 	public static function add_order_actions(array $actions, WC_Order $order): array

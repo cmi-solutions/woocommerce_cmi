@@ -36,6 +36,28 @@ final class Cmi_Payment_State
 		return $status === self::PRE_CONFIRMATION_REQUIRED;
 	}
 
+	/**
+	 * Whether to offer Confirm and Void for an order: only when it has a pre-authorization.
+	 *
+	 * A Pending order has no payment yet (the customer may still be paying, or gave up): it is
+	 * only offered Check CMI, which moves it to On hold if CMI reports a pre-authorization.
+	 * On hold without a stored payment state covers orders from before that state existed.
+	 *
+	 * @param string $payment_state   The order's CMI payment state ('' when not stored).
+	 * @param string $order_status    WooCommerce order status, without "wc-".
+	 * @param string $postauth_status Status the merchant set for captured orders.
+	 */
+	public static function can_offer_confirmation(string $payment_state, string $order_status, string $postauth_status): bool
+	{
+		if (in_array($order_status, array('processing', 'completed', 'confirmed', 'refunded', 'cancelled', 'failed', 'pending', $postauth_status), true)) {
+			return false;
+		}
+		if (in_array($payment_state, array(self::CONFIRMED, self::FAILED, self::CLIENT_CANCELLED, self::VOIDED, self::REFUNDED), true)) {
+			return false;
+		}
+		return $payment_state === self::PRE_CONFIRMATION_REQUIRED || $order_status === 'on-hold';
+	}
+
 	public static function is_terminal(string $status): bool
 	{
 		return in_array($status, array(self::FAILED, self::CLIENT_CANCELLED, self::VOIDED, self::REFUNDED, self::CONFIRMED), true);

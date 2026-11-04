@@ -86,6 +86,17 @@ assert_false(
 	'INITIATED state cannot be confirmed'
 );
 
+// When Confirm and Void are offered (CMI Actions column, action icons, order actions dropdown)
+assert_false(Cmi_Payment_State::can_offer_confirmation(Cmi_Payment_State::INITIATED, 'pending', 'completed'), 'Pending order, customer sent to CMI: no Confirm/Void (only Check CMI)');
+assert_false(Cmi_Payment_State::can_offer_confirmation('', 'pending', 'completed'), 'Pending order with no CMI state: no Confirm/Void');
+assert_true(Cmi_Payment_State::can_offer_confirmation(Cmi_Payment_State::PRE_CONFIRMATION_REQUIRED, 'on-hold', 'completed'), 'Pre-authorized order on hold: Confirm/Void offered');
+assert_true(Cmi_Payment_State::can_offer_confirmation('', 'on-hold', 'completed'), 'On hold order from before the payment state existed: Confirm/Void offered');
+assert_false(Cmi_Payment_State::can_offer_confirmation(Cmi_Payment_State::CONFIRMED, 'completed', 'completed'), 'Captured order: no Confirm/Void');
+assert_false(Cmi_Payment_State::can_offer_confirmation(Cmi_Payment_State::CONFIRMED, 'cmi-confirmed', 'cmi-confirmed'), 'Captured order in a custom status: no Confirm/Void');
+assert_false(Cmi_Payment_State::can_offer_confirmation(Cmi_Payment_State::VOIDED, 'on-hold', 'completed'), 'Voided pre-authorization still on hold: no Confirm/Void');
+assert_false(Cmi_Payment_State::can_offer_confirmation(Cmi_Payment_State::FAILED, 'failed', 'completed'), 'Declined payment: no Confirm/Void');
+assert_false(Cmi_Payment_State::can_offer_confirmation(Cmi_Payment_State::CLIENT_CANCELLED, 'cancelled', 'completed'), 'Cancelled order: no Confirm/Void');
+
 // Terminal states
 assert_true(Cmi_Payment_State::is_terminal(Cmi_Payment_State::CONFIRMED), 'CONFIRMED is a terminal state');
 assert_true(Cmi_Payment_State::is_terminal(Cmi_Payment_State::FAILED), 'FAILED is a terminal state');
