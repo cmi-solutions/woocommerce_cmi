@@ -1,0 +1,25 @@
+# Attaches the installable plugin zip (cmi_woocommerce_<tag>.zip) to every published release.
+# GitHub's own "Source code" archives contain the whole repository, not an installable plugin.
+name: Attach plugin zip to release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The zip contains only the cmi/ folder, as WordPress expects: cmi/gateway-cmi.php
+      - name: Build cmi_woocommerce_<tag>.zip
+        run: git archive --format=zip --prefix=cmi/ -o "cmi_woocommerce_${{ github.ref_name }}.zip" HEAD:cmi
+
+      - name: Attach it to the release
+        run: gh release upload "${{ github.ref_name }}" "cmi_woocommerce_${{ github.ref_name }}.zip" --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}
