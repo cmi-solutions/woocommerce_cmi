@@ -33,10 +33,45 @@ The plugin supports:
 
 ## Installation
 
-1. Create a zip file of the `cmi` folder, so that the zip contains `cmi/gateway-cmi.php`.
-2. In WordPress, go to **Plugins → Add New → Upload Plugin**, upload the zip, and activate the plugin.
-3. Open **WooCommerce → Settings → Payments → CMI** and enter the details provided by CMI (see [Configuration](#configuration)).
-4. Before going live, test a payment, a confirmation and a refund using CMI's test environment.
+Before you start, make sure **WooCommerce is installed and active**, and that your site meets the [supported versions](#supported-versions).
+
+### 1. Download the plugin
+
+1. Open the **[latest release](https://github.com/cmi-solutions/woocommerce_cmi/releases/latest)**.
+2. Under **Assets**, click **`cmi_woocommerce_vX.Y.Z.zip`** (for example `cmi_woocommerce_v2.0.0.zip`) to download it.
+
+![Under Assets, download cmi_woocommerce_v2.0.0.zip](docs/images/1-download-release.svg)
+
+> [!IMPORTANT]
+> - Don't download **Source code (zip)** or **Source code (tar.gz)**. They contain the whole project, not an installable plugin.
+> - **Don't unzip the file:** WordPress installs the zip as it is. Safari on Mac may unzip downloads automatically. If you get a `cmi` folder instead of a zip, download it again with another browser, or turn off **Open "safe" files after downloading** in Safari's settings.
+
+### 2. Install it in WordPress
+
+1. In your WordPress admin, go to **Plugins → Add New Plugin**.
+2. Click **Upload Plugin** at the top of the page.
+3. Click **Choose File** and select the `cmi_woocommerce_vX.Y.Z.zip` file you downloaded.
+4. Click **Install Now**.
+
+![Plugins, Add New Plugin, Upload Plugin, Choose File, Install Now](docs/images/2-upload-plugin.svg)
+
+5. When WordPress shows **Plugin installed successfully**, click **Activate Plugin**.
+
+![Click Activate Plugin](docs/images/3-activate-plugin.svg)
+
+### 3. Configure it
+
+Open **WooCommerce → Settings → Payments → CMI** and enter the details provided by CMI (see [Configuration](#configuration)). Before going live, test a payment, a confirmation and a refund using CMI's test environment.
+
+### Updating from an earlier version
+
+1. Read the [changelog](CHANGELOG.md) first: some versions change how the plugin works.
+2. Download the new zip and upload it in exactly the same way (steps 1 to 4 above). You don't need to deactivate or delete the current version, and your settings are kept.
+3. WordPress shows **This plugin is already installed**, with the current and uploaded versions. Click **Replace current with uploaded**.
+
+![This plugin is already installed: click Replace current with uploaded](docs/images/4-replace-existing.svg)
+
+If WordPress installs it as a second CMI plugin instead of offering to replace it, the zip wasn't the one from **Assets**. Deactivate and delete the extra plugin, then upload `cmi_woocommerce_vX.Y.Z.zip`. Deleting a CMI plugin removes the CMI connection credentials, so enter them again in the settings afterwards.
 
 **Your shop must be reachable from the internet.** CMI contacts your shop after each payment, and in Automatic mode this is what captures the payment. A site running only on your computer won't receive these messages.
 
