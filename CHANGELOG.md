@@ -43,10 +43,12 @@ A major update. Some things now work differently, so please read **Before you up
 ### Fixes
 
 - Payments are matched to the right order, including on shops using sequential order numbers.
-- An order is marked paid only when CMI confirms the payment was captured.
+- **Check CMI** marks an order paid only when CMI reports the payment as captured.
 - A late or repeated message from CMI can no longer change an order that was already paid or authorized.
 - The CURCY and WPML + WCML currency integrations now read the correct exchange rates.
 - Partial refunds made in CMI are no longer shown as full refunds.
 - Refunds made in the CMI back office are recorded in WooCommerce when you click **Check CMI**, now also shown next to **Refund**. A refund from WooCommerce is refused until the order is up to date, so it can't use a wrong balance.
 - The customer no longer sees a blank page if the return to the shop runs into an error.
 - Admin pages no longer show an "Install the WooThemes Updater" notice, and unused files were removed.
+- Payments are no longer rejected by CMI because another plugin (such as CleanTalk or TranslatePress) added hidden fields to the payment form.
+- The plugin's files can no longer be opened directly in a browser.
