@@ -9,7 +9,7 @@ Updating from an earlier version? Read the [changelog](CHANGELOG.md) first: vers
 | Component | Minimum | Tested up to |
 | --- | --- | --- |
 | PHP | 8.3 | – |
-| WordPress | 6.7 | 7.0.4 |
+| WordPress | 6.7 | 7.1.4 |
 | WooCommerce | 9.0 | 11.0.1 |
 
 The plugin supports:
