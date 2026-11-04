@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || exit;
 /**
  * MAD conversion rules for CMI payments.
  *

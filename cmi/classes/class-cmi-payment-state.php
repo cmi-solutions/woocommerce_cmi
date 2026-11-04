@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || exit;
 /**
  * Provider-neutral CMI payment-state rules.
  *

@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || exit;
 
 /**
  * Utitlity class for load supported classes after woocommerce loaded

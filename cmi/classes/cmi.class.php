@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || exit;
 /**
  * cmi Payment Gateway
  *
@@ -1154,8 +1155,26 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 						cursor:         "wait",
 						lineHeight:		"24px",
 					}
-				});						jQuery("input[name=trp-form-language]").remove();
-			jQuery("#submit_cmi_payment_form").click();
+				});						
+			// CMI checks the signature against every field it receives. Other plugins add hidden
+			// fields to all forms (CleanTalk, TranslatePress...): remove every field this plugin
+			// did not sign, then send the form without firing "submit", so no field is added back.
+			var cmiForm = document.getElementById("cmi_payment_form");
+			var cmiSignedFields = ' . wp_json_encode(array_keys($data)) . ';
+			var cmiSendForm = function () {
+				Array.prototype.slice.call(cmiForm.elements).forEach(function (field) {
+					if (field.name && cmiSignedFields.indexOf(field.name) === -1) {
+						field.parentNode.removeChild(field);
+					}
+				});
+				HTMLFormElement.prototype.submit.call(cmiForm);
+			};
+			// Fallback button: let other submit handlers run first, then clean and send
+			cmiForm.addEventListener("submit", function (event) {
+				event.preventDefault();
+				setTimeout(cmiSendForm, 0);
+			});
+			cmiSendForm();
 		');
 		return '<form action="' . esc_url($this->actionslk) . '" method="post" id="cmi_payment_form" target="_top">
 				' . implode('', $cmi_args_array) . '

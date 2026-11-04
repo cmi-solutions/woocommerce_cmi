@@ -4,6 +4,9 @@
  * Covers payment states, transitions, security signature calculation, and PostAuth/Void/Credit XML generation.
  */
 
+// The plugin files only run inside WordPress (ABSPATH); these tests load them on purpose.
+define('ABSPATH', __DIR__ . '/');
+
 require_once __DIR__ . '/../cmi/classes/class-cmi-payment-state.php';
 require_once __DIR__ . '/../cmi/classes/class-cmi-currency.php';
 require_once __DIR__ . '/../cmi/classes/class-cmi-transaction-guard.php';

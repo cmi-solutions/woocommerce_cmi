@@ -1,4 +1,5 @@
 <?php
+defined('ABSPATH') || exit;
 /**
  * Rules that protect CMI back-office operations against order-ID collisions.
  *

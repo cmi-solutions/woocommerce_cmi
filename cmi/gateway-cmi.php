@@ -17,6 +17,8 @@
 	WC tested up to: 11.0.1
 */
 
+defined('ABSPATH') || exit;
+
 
 /**
  * Load the translations. WordPress provides the language (the site's, or the admin's own
