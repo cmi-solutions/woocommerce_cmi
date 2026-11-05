@@ -1,39 +1,5 @@
 # Changelog
 
-## Unreleased
-
-### Fixed
-
-- The payment method's description now shows in the Checkout Blocks checkout, WooCommerce's default checkout, as it already did in the classic checkout.
-- **Refund via CMI API** is no longer offered in the order Actions menu for orders without a captured payment, such as Pending or Failed orders.
-- In the manual exchange rates table, adding a currency after removing another one no longer loses a rate when you save.
-- A customer whose name has no Latin letters, for example a name typed in Arabic, is now asked at checkout to enter it in Latin letters. Before, the name reached CMI empty.
-- Saving the settings on a new install no longer shows "the exchange rate for AED was not saved". The exchange rates table now starts empty, and a row left without a rate is ignored.
-- The **Complete Kit** now requires the API credentials. Saving the Complete Kit without the API URL, username and password keeps the Standard Kit and asks you to enter them. A Complete Kit saved earlier without them works like the Standard Kit, with a warning on the settings page. New installs start with the Standard Kit.
-- With the Standard Kit, the plugin no longer calls the CMI API, even if API credentials were entered.
-- The Payment Confirmation setting no longer states a delay before the automatic checks.
-- A custom order status (set in **Order status after capture**) no longer causes an error when WooCommerce counts orders by status.
-- The one-time repair of old truncated order statuses now writes a valid status with HPOS storage. Before, repaired orders disappeared from the orders list.
-- The exchange rates table fits its frame: the currency column and **+ Add currency** are no longer hidden.
-- Messages shown after Confirm, Void, Refund or Check CMI now give the order number seen in WooCommerce and in the CMI back office (for example `WCA247-1050`), not the internal number.
-- The thank-you page shows plain words to the customer ("Payment successful", "Payment authorized"…) instead of technical names such as `PRE_CONFIRMATION_REQUIRED`. A refunded payment is no longer shown as "not completed".
-- Order notes name the order status as WooCommerce shows it (for example "Processing"), not its code.
-
-### Changed
-
-- **Automatic checks of pending orders (Complete Kit) now run in both confirmation modes.** In Automatic mode they catch a payment whose CMI notification never reached the shop. In both modes, an order whose payment is still declined at the last check is marked **Failed** instead of staying **Pending payment**.
-- A refund from the orders list is sent with the amount and reason in the request body, no longer in the address. Opening the Refund link without the refund window no longer refunds anything.
-- The Checkout Blocks script is reloaded by browsers after each update.
-
-### Removed
-
-- Unused code inherited from older versions: the `offshore_account` and `offshore_currency` settings (also removed from existing installs), unused constants and functions, and a WooCommerce 1.x hook.
-
-### For developers
-
-- Signatures, API requests and cleaned values are built in one class (`Cmi_Protocol`), and the provided tests run that code instead of copies of it.
-- The Checkout Blocks functions are prefixed `cmi_` (`cmi_declare_cart_checkout_blocks_compatibility`, `cmi_register_blocks_payment_method_type`).
-
 ## 2.0.0
 
 A major update. Some things now work differently, so please read **Before you update** and **Changes to how the plugin works** before installing it.
@@ -52,10 +18,11 @@ A major update. Some things now work differently, so please read **Before you up
 - **Refunds in other currencies** are calculated in MAD, using the rate applied at payment, so they match what CMI charged.
 - **Supported currency plugins:** FOX / WOOCS, WPML + WCML, CURCY and Aelia Currency Switcher, or your own rates entered in the settings.
 - **Same order number** in WooCommerce and in the CMI back office.
-- **Automatic status checks** for Manual-mode orders when the customer doesn't return to the shop after paying.
+- **Automatic status checks** (Complete Kit), in both confirmation modes, for orders left pending after a payment: a pre-authorized payment moves the order to **On hold**, a captured one marks it paid, and a payment still declined at the last check marks it **Failed**.
 - **Old pre-authorization warning:** before confirming a pre-authorization older than 5 days, you're advised to inform the customer, to reduce the risk of chargebacks.
 - **Automatic Redirect** setting: choose whether CMI sends the customer back to your shop after paying.
 - **Show/hide icon** on the Store Key and API Password fields.
+- **Clear payment result for customers** on the thank-you page ("Payment successful", "Payment authorized"…).
 - **English and French**, following your WordPress language.
 - **HPOS and Checkout Blocks** support.
 
@@ -64,6 +31,7 @@ A major update. Some things now work differently, so please read **Before you up
 | Change | What you may need to do |
 | --- | --- |
 | Order numbers include a prefix, in WooCommerce and in CMI | Choose a readable prefix if you prefer, such as your shop's initials. If you use one CMI account on several websites, give each a different prefix |
+| The **Complete Kit** requires the API credentials (API URL, username, password). Without them the plugin works like the Standard Kit and never calls the CMI API. New installs start with the Standard Kit | Enter the API credentials provided by CMI to use the Complete Kit |
 | The **Order Identifier Format** setting was removed: the order number is always used | Nothing, unless you relied on sending WordPress's internal order ID |
 | In **Automatic** mode, CMI captures the payment itself when it notifies your shop, even with the API configured | Your shop must be reachable from the internet |
 | Refunds of orders in other currencies are calculated in MAD | For orders paid in another currency before 2.0.0, refund from the CMI back office |
@@ -73,6 +41,8 @@ A major update. Some things now work differently, so please read **Before you up
 | Deleting the plugin removes the CMI connection credentials (your orders are kept) | Enter them again if you reinstall the plugin |
 | The `woocommerce_cmi_exchange_rate` and `woocommerce_cmi_order_amount_mad` filters were removed | Developers who used them should switch to Manual rates or a supported currency plugin |
 | Texts are in English with a French translation | Custom translations made for an earlier version need to be redone |
+| A customer whose name has no Latin letter (for example typed in Arabic) is asked to enter it in Latin letters: CMI receives names in Latin letters only | Nothing |
+| The Checkout Blocks functions are named `cmi_declare_cart_checkout_blocks_compatibility` and `cmi_register_blocks_payment_method_type` | Developers who called the old `ph_*` names should use the new ones |
 
 ### Fixes
 
@@ -83,6 +53,10 @@ A major update. Some things now work differently, so please read **Before you up
 - Partial refunds made in CMI are no longer shown as full refunds.
 - Refunds made in the CMI back office are recorded in WooCommerce when you click **Check CMI**, now also shown next to **Refund**. A refund from WooCommerce is refused until the order is up to date, so it can't use a wrong balance.
 - The customer no longer sees a blank page if the return to the shop runs into an error.
-- Admin pages no longer show an "Install the WooThemes Updater" notice, and unused files were removed.
+- Admin pages no longer show an "Install the WooThemes Updater" notice, and unused files and code were removed.
 - Payments are no longer rejected by CMI because another plugin (such as CleanTalk or TranslatePress) added hidden fields to the payment form.
 - The plugin's files can no longer be opened directly in a browser.
+- The payment description now shows in the Checkout Blocks checkout, WooCommerce's default checkout.
+- Saving the settings on a new install no longer shows "the exchange rate for AED was not saved", and adding a currency after removing another one no longer loses a rate. The rates table fits its frame.
+- A custom order status (**Order status after capture**) no longer causes an error when WooCommerce counts orders by status.
+- Browsers load the new Checkout Blocks script after an update.
