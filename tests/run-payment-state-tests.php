@@ -10,6 +10,7 @@ define('ABSPATH', __DIR__ . '/');
 require_once __DIR__ . '/../cmi/classes/class-cmi-payment-state.php';
 require_once __DIR__ . '/../cmi/classes/class-cmi-currency.php';
 require_once __DIR__ . '/../cmi/classes/class-cmi-transaction-guard.php';
+require_once __DIR__ . '/../cmi/classes/class-cmi-protocol.php';
 
 function assert_same($expected, $actual, string $message): void
 {
@@ -119,21 +120,23 @@ echo "  -> Payment state assertions passed.\n\n";
 // --- 2. CMI SHA-512 Signature Hash Calculation ---
 echo "2. Testing SHA-512 Signature Hash Algorithm:\n";
 
+// The plugin's own code (Cmi_Protocol), not a copy: a change to the signature fails these tests.
 function calculate_cmi_hash(array $data, string $store_key): string
 {
-	$parameters = array_keys($data);
-	natcasesort($parameters);
-	$hash_value = '';
-	foreach ($parameters as $param) {
-		if (in_array(strtolower($param), array('hash', 'encoding'), true)) {
-			continue;
-		}
-		$value = html_entity_decode(preg_replace("/\n$/", '', $data[$param]), ENT_QUOTES, 'UTF-8');
-		$hash_value .= str_replace('|', '\\|', str_replace('\\', '\\\\', $value)) . '|';
-	}
-	$hash_value .= str_replace('|', '\\|', str_replace('\\', '\\\\', $store_key));
-	return base64_encode(pack('H*', hash('sha512', $hash_value)));
+	return Cmi_Protocol::callback_hash($data, $store_key);
 }
+
+// Known answers, computed with CMI's PHP example (2.SendData.php for the request,
+// callback.php for the callback): natural order, "|" and "\\" escaped, entities decoded.
+$known_key = 'Key|With\\Pipe';
+$known_request = array(
+	'clientid' => '600000000', 'amount' => '1250.00', 'oid' => 'WC69DF-31', 'okUrl' => 'https://shop.ma/?wc-api=WC_Gateway_cmi_return',
+	'BillToName' => 'Said El Idrissi', 'BillToStreet1' => ' 15 rue | Ibn &amp;amp; Battouta ', 'currency' => '504', 'rnd' => 'abc123',
+	'id10' => 'x', 'id2' => 'y', 'encoding' => 'UTF-8', 'hash' => 'old', 'description' => 'C:\\path',
+);
+$known_callback = $known_request + array('Response' => 'Approved', 'ProcReturnCode' => '00', 'ErrMsg' => "Line\n", 'HASH' => 'zzz', 'EXTRA.TRXDATE' => '20261105 10:00:00', 'Note' => 'l&#039;ordre &eacute;t&eacute;');
+assert_same('IdDy9ygtwjbfMtXFRYhhk8vjxG8Ifek+PZCf/42CvFq4y2n8hdJj7J9JEFkZk5YiO1Sc3xNxdU98j8CHe0j+Ag==', Cmi_Protocol::request_hash($known_request, $known_key), 'Payment request signature matches the known answer');
+assert_same('M+xLM+4LHpELGHl7FMclfOibjhOf3vK4WRGa4VOkK1UqEhi/eqPlIVm9Nt2mQd65IGBsgAK4WP2mse2u44+iyA==', Cmi_Protocol::callback_hash($known_callback, $known_key), 'Callback signature matches the known answer');
 
 $sample_params = array(
 	'clientid' => '123456789',
@@ -169,62 +172,11 @@ echo "  -> Signature hash assertions passed.\n\n";
 // --- 3. XML Payload (PostAuth, Void, Credit, ORDERSTATUS) Escaping Security & Structure ---
 echo "3. Testing Outbound XML Payload (PostAuth, Void, Credit, ORDERSTATUS) Sanitization & Spec:\n";
 
+// The plugin's own XML builder (Cmi_Protocol::xml_request), not a copy.
 function build_cmi_xml_spec(string $type, string $username, string $password, string $client_id, string $order_id, ?float $amount = null): string
 {
-	$escape = static function (string $value): string {
-		return htmlspecialchars($value, ENT_XML1 | ENT_QUOTES, 'UTF-8');
-	};
-
-	$name = $escape($username);
-	$pwd = $escape($password);
-	$cid = $escape($client_id);
-	$oid = $escape($order_id);
-
-	if ($type === 'Void') {
-		return '<?xml version="1.0" encoding="UTF-8"?>' .
-			'<CC5Request>' .
-			'<Name>' . $name . '</Name>' .
-			'<Password>' . $pwd . '</Password>' .
-			'<ClientId>' . $cid . '</ClientId>' .
-			'<Type>Void</Type>' .
-			'<OrderId>' . $oid . '</OrderId>' .
-			'</CC5Request>';
-	} elseif ($type === 'PostAuth') {
-		$xml = '<?xml version="1.0" encoding="UTF-8"?>' .
-			'<CC5Request>' .
-			'<Name>' . $name . '</Name>' .
-			'<Password>' . $pwd . '</Password>' .
-			'<ClientId>' . $cid . '</ClientId>' .
-			'<Type>PostAuth</Type>' .
-			'<OrderId>' . $oid . '</OrderId>';
-		if ($amount !== null) {
-			$xml .= '<Total>' . $escape(number_format($amount, 2, '.', '')) . '</Total>';
-		}
-		$xml .= '</CC5Request>';
-		return $xml;
-	} elseif ($type === 'Credit') {
-		$refund_amount = $amount !== null ? $amount : 100.00;
-		return '<?xml version="1.0" encoding="UTF-8"?>' .
-			'<CC5Request>' .
-			'<Name>' . $name . '</Name>' .
-			'<Password>' . $pwd . '</Password>' .
-			'<ClientId>' . $cid . '</ClientId>' .
-			'<Type>Credit</Type>' .
-			'<Total>' . $escape(number_format($refund_amount, 2, '.', '')) . '</Total>' .
-			'<Currency>504</Currency>' .
-			'<OrderId>' . $oid . '</OrderId>' .
-			'</CC5Request>';
-	} elseif ($type === 'ORDERSTATUS') {
-		return '<?xml version="1.0" encoding="UTF-8"?>' .
-			'<CC5Request>' .
-			'<Name>' . $name . '</Name>' .
-			'<Password>' . $pwd . '</Password>' .
-			'<ClientId>' . $cid . '</ClientId>' .
-			'<OrderId>' . $oid . '</OrderId>' .
-			'<Extra><ORDERSTATUS>QUERY</ORDERSTATUS></Extra>' .
-			'</CC5Request>';
-	}
-	return '';
+	$total = $amount === null ? ($type === 'Credit' ? '100.00' : null) : number_format($amount, 2, '.', '');
+	return (string) Cmi_Protocol::xml_request($type, $username, $password, $client_id, $order_id, $total, '504');
 }
 
 $malicious_input = '1001</OrderId><InjectedTag>attack</InjectedTag><OrderId>1001';
@@ -270,31 +222,22 @@ echo "  -> XML payload escaping and specification assertions passed.\n\n";
 // --- 4. Order ID (OID) Sanitization & Sequential Formatting ---
 echo "4. Testing Order ID (OID) Sanitization & Alphanumeric CMI Spec Compliance:\n";
 
-function test_str_without_accents($str, $charset = 'utf-8')
-{
-	$str = htmlentities($str, ENT_NOQUOTES, $charset);
-	$str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
-	$str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str);
-	$str = preg_replace('#&[^;]+;#', '', $str);
-	$str = preg_replace('/[^a-zA-Z0-9_ -]/s', '', $str);
-	return $str;
-}
-
+// The plugin's own cleaning (Cmi_Protocol), not a copy.
 function test_sanitize_cmi_oid(string $raw_oid): string
 {
-	$clean = test_str_without_accents($raw_oid);
-	$clean = preg_replace('/[^a-zA-Z0-9_-]/', '', $clean);
-	return substr((string) $clean, 0, 64);
+	return Cmi_Protocol::sanitize_oid($raw_oid);
 }
 
 function test_resolve_oid(string $raw_order_number, int $internal_id): string
 {
-	$sanitized = test_sanitize_cmi_oid($raw_order_number);
-	if ($sanitized === '') {
-		$sanitized = (string) $internal_id;
-	}
-	return $sanitized;
+	return Cmi_Protocol::oid_for_number($raw_order_number, $internal_id);
 }
+
+// Names and addresses: accents removed like CMI's PHP example; no Latin letter -> empty
+assert_same('Jose Martin', Cmi_Protocol::without_accents('José Martín'), 'Accents removed from a name');
+assert_same('AEsir Olaf', Cmi_Protocol::without_accents('Æsir Ølaf'), 'Ligatures and slashed letters kept as Latin letters');
+assert_same(' ', Cmi_Protocol::without_accents('محمد العلوي'), 'A name in Arabic has no Latin letter left');
+assert_same('Fes', Cmi_Protocol::without_accents('Fès'), 'City accents removed');
 
 // 4.1 Standard alphanumeric sequential formats
 assert_same('CMD-2026-0001', test_sanitize_cmi_oid('CMD-2026-0001'), 'Preserves standard hyphenated sequential IDs');
@@ -870,7 +813,7 @@ $cmi_auth = Cmi_Transaction_Guard::parse_cmi_datetime("2026-10-20 09:55:00.427")
 assert_same(strtotime("2026-10-20 08:55:00 UTC"), $cmi_auth, "AUTH_DTTM is read as Moroccan time (GMT+1)");
 assert_same(9, Cmi_Payment_State::preauth_warning_days($cmi_auth, strtotime("2026-10-30 07:55:00 UTC")), "Pre-authorized on CMI 10 days minus 1 hour ago: warning shows 9");
 assert_same(0, Cmi_Payment_State::preauth_warning_days($cmi_auth, strtotime("2026-10-23 08:55:00 UTC")), "Pre-authorized on CMI 3 days ago: no warning");
-// Automatic status checks of orders left pending in manual mode
+// Automatic status checks of orders left pending (both confirmation modes)
 assert_same(900, Cmi_Payment_State::pending_check_delay(0), "First check after 15 minutes");
 assert_same(3600, Cmi_Payment_State::pending_check_delay(1), "Second check 1 hour later");
 assert_same(21600, Cmi_Payment_State::pending_check_delay(2), "Third check 6 hours later");
@@ -881,6 +824,12 @@ foreach (array("A", "C", "S", "V", " a ") as $stat) {
 foreach (array("", "D", "NW", "PN", "R") as $stat) {
 	assert_false(Cmi_Payment_State::pending_check_applies($stat), "Automatic check leaves the order alone for TRANS_STAT \"$stat\"");
 }
+// A declined payment fails the order only on the last check: until then the customer may retry
+assert_false(Cmi_Payment_State::pending_check_applies("D", false, "05"), "Declined, more checks to come: order left pending");
+assert_true(Cmi_Payment_State::pending_check_applies("D", true, "05"), "Declined at the last check: order updated (failed)");
+assert_true(Cmi_Payment_State::pending_check_applies("", true, "99"), "Gate timeout (99) at the last check: order updated (failed)");
+assert_false(Cmi_Payment_State::pending_check_applies("", true, ""), "Not found at CMI at the last check: order left pending");
+assert_false(Cmi_Payment_State::pending_check_applies("PN", true, "00"), "Still in progress at the last check: order left pending");
 echo "  -> Pre-authorization warning assertions passed.\n\n";
 echo "ALL CMI TESTS COMPLETED SUCCESSFULLY.\n";
 

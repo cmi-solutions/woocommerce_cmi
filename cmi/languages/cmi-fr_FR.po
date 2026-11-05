@@ -59,8 +59,8 @@ msgstr "Kit Complet — Avec gestion par API (Confirmer, Annuler, Rembourser)"
 msgid "Payment Confirmation"
 msgstr "Confirmation du paiement"
 
-msgid "<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. If the order stays pending, the plugin also checks CMI automatically (Complete Kit), and you can use Check CMI at any time."
-msgstr "<strong>Automatique</strong> — Le paiement est débité immédiatement lorsque le client finalise sa commande via le callback.<br><strong>Manuelle</strong> — Le paiement est seulement autorisé (pré-autorisation). Vous devez le confirmer manuellement pour débiter les fonds : depuis la liste des commandes avec le Kit Complet (API), ou depuis le back-office CMI avec le Kit Standard. Si la commande reste en attente de paiement, l'extension vérifie aussi automatiquement CMI (Kit Complet), et vous pouvez utiliser Vérifier CMI à tout moment."
+msgid "<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit.<br>In both modes, if an order stays pending after a payment, the plugin checks CMI automatically (Complete Kit), and you can use Check CMI at any time."
+msgstr "<strong>Automatique</strong> — Le paiement est débité immédiatement lorsque le client finalise sa commande via le callback.<br><strong>Manuelle</strong> — Le paiement est seulement autorisé (pré-autorisation). Vous devez le confirmer manuellement pour débiter les fonds : depuis la liste des commandes avec le Kit Complet (API), ou depuis le back-office CMI avec le Kit Standard.<br>Dans les deux modes, si une commande reste en attente de paiement après un paiement, l'extension vérifie automatiquement CMI (Kit Complet), et vous pouvez utiliser Vérifier CMI à tout moment."
 
 msgid "Automatic — Capture payment immediately"
 msgstr "Automatique — Débiter le paiement immédiatement"
@@ -548,32 +548,32 @@ msgstr "Vous n'avez pas l'autorisation de gérer les commandes WooCommerce."
 msgid "Invalid order ID."
 msgstr "Identifiant de commande non valide."
 
-msgid "CMI confirmation failed for order #%d: %s"
-msgstr "Échec de la confirmation CMI pour la commande n° %d : %s"
+msgid "CMI confirmation failed for order %s: %s"
+msgstr "Échec de la confirmation CMI pour la commande %s : %s"
 
-msgid "Order #%d confirmed successfully via CMI API."
-msgstr "Commande n° %d confirmée avec succès via l'API CMI."
+msgid "Order %s confirmed successfully via CMI API."
+msgstr "Commande %s confirmée avec succès via l'API CMI."
 
-msgid "CMI void/cancellation failed for order #%d: %s"
-msgstr "Échec de l'annulation CMI pour la commande n° %d : %s"
+msgid "CMI void/cancellation failed for order %s: %s"
+msgstr "Échec de l'annulation CMI pour la commande %s : %s"
 
-msgid "Order #%d voided and cancelled successfully via CMI API."
-msgstr "Commande n° %d annulée avec succès via l'API CMI."
+msgid "Order %s voided and cancelled successfully via CMI API."
+msgstr "Commande %s annulée avec succès via l'API CMI."
 
-msgid "CMI refund failed for order #%d: %s"
-msgstr "Échec du remboursement CMI pour la commande n° %d : %s"
+msgid "CMI refund failed for order %s: %s"
+msgstr "Échec du remboursement CMI pour la commande %s : %s"
 
-msgid "Partial refund for order #%1$d processed successfully via CMI API. Refunded: %2$s MAD (remaining refundable: %3$s MAD)."
-msgstr "Remboursement partiel de la commande n° %1$d effectué avec succès via l'API CMI. Remboursé : %2$s MAD (solde remboursable : %3$s MAD)."
+msgid "Partial refund for order %1$s processed successfully via CMI API. Refunded: %2$s MAD (remaining refundable: %3$s MAD)."
+msgstr "Remboursement partiel de la commande %1$s effectué avec succès via l'API CMI. Remboursé : %2$s MAD (solde remboursable : %3$s MAD)."
 
-msgid "Order #%1$d fully refunded successfully via CMI API (%2$s MAD)."
-msgstr "Commande n° %1$d entièrement remboursée avec succès via l'API CMI (%2$s MAD)."
+msgid "Order %1$s fully refunded successfully via CMI API (%2$s MAD)."
+msgstr "Commande %1$s entièrement remboursée avec succès via l'API CMI (%2$s MAD)."
 
 msgid "CMI Status Check result: [%s] %s"
 msgstr "Résultat de la vérification CMI : [%s] %s"
 
-msgid "CMI status for order #%d: [%s] %s"
-msgstr "État CMI de la commande n° %d : [%s] %s"
+msgid "CMI status for order %s: [%s] %s"
+msgstr "État CMI de la commande %s : [%s] %s"
 
 msgid "CMI confirmation failed: %s"
 msgstr "Échec de la confirmation CMI : %s"
@@ -842,23 +842,11 @@ msgstr "Votre paiement CMI a été confirmé."
 msgid "Your payment was authorized and awaits merchant confirmation."
 msgstr "Votre paiement a été autorisé et attend la confirmation du marchand."
 
-msgid "The CMI transaction was voided by the merchant."
-msgstr "La transaction CMI a été annulée par le marchand."
-
 msgid "You cancelled the payment."
 msgstr "Vous avez annulé le paiement."
 
 msgid "The CMI payment was not completed."
 msgstr "Le paiement CMI n'a pas abouti."
-
-msgid "Amount mismatch"
-msgstr "Montant non concordant"
-
-msgid "Bad access of page"
-msgstr "Accès incorrect à la page"
-
-msgid "Security signature mismatch"
-msgstr "Signature de sécurité non concordante"
 
 msgid "requires PHP 8.3 or higher. You are running PHP %s."
 msgstr "nécessite PHP 8.3 ou supérieur. Vous utilisez PHP %s."
@@ -877,3 +865,27 @@ msgstr "CMI : le Kit Complet nécessite les identifiants API fournis par CMI (UR
 
 msgid "CMI: the Complete Kit is selected but the API credentials are missing, so the plugin works like the Standard Kit. Enter the API URL, API username and API password provided by CMI, or choose the Standard Kit."
 msgstr "CMI : le Kit Complet est sélectionné mais les identifiants API sont manquants : l'extension fonctionne donc comme le Kit Standard. Saisissez l'URL de l'API, le nom d'utilisateur API et le mot de passe API fournis par CMI, ou choisissez le Kit Standard."
+
+msgid "CMI refund for order %s was not made: use the Refund button to choose the amount."
+msgstr "Le remboursement CMI de la commande %s n'a pas été effectué : utilisez le bouton Rembourser pour choisir le montant."
+
+msgid "Payment successful"
+msgstr "Paiement réussi"
+
+msgid "Payment authorized"
+msgstr "Paiement autorisé"
+
+msgid "Payment cancelled"
+msgstr "Paiement annulé"
+
+msgid "The merchant cancelled this payment. You were not charged."
+msgstr "Le marchand a annulé ce paiement. Vous n'avez pas été débité."
+
+msgid "Payment refunded"
+msgstr "Paiement remboursé"
+
+msgid "This payment was refunded."
+msgstr "Ce paiement a été remboursé."
+
+msgid "Payment not completed"
+msgstr "Paiement non abouti"

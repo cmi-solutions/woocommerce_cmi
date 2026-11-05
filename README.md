@@ -10,7 +10,7 @@ Updating from an earlier version? Read the [changelog](CHANGELOG.md) first: vers
 | --- | --- | --- |
 | PHP | 8.3 | – |
 | WordPress | 6.7 | 7.1.4 |
-| WooCommerce | 9.0 | 11.0.1 |
+| WooCommerce | 9.0 | 11.2.2 |
 
 The plugin supports:
 
@@ -29,7 +29,6 @@ The plugin supports:
 - **Stays in sync with the CMI back office:** a payment confirmed or voided in CMI updates the order in WooCommerce.
 - **Old pre-authorization warning:** before confirming a pre-authorization older than 5 days, you're advised to inform the customer, to reduce the risk of chargebacks.
 - **English and French**, following your WordPress language.
-- **HPOS and Checkout Blocks** support.
 
 ## Installation
 
@@ -103,9 +102,9 @@ All settings are in **WooCommerce → Settings → Payments → CMI**. Fields ma
 | **Automatic** | The payment is captured as soon as the customer pays |
 | **Manual** | The payment is only pre-authorized: the money is reserved on the customer's card, and the order goes **On hold** until you confirm or void it |
 
-In both modes, CMI notifies your shop after each payment, and the order is updated automatically. If that notification doesn't reach your shop in Manual mode and the order stays **Pending**:
+In both modes, CMI notifies your shop after each payment, and the order is updated automatically. An order can still stay **Pending payment** when that notification doesn't reach your shop, or when the customer's card is declined and the customer leaves (CMI then doesn't notify the shop):
 
-- **Complete Kit:** the plugin checks CMI automatically and moves the order to **On hold** if the payment is pre-authorized. These checks never confirm, void or refund a payment. You can also click **Check CMI** at any time.
+- **Complete Kit:** in both modes, the plugin checks CMI automatically a few times. A pre-authorized payment moves the order to **On hold** for you to confirm, and a captured one marks it paid. A payment still declined at the last check marks the order **Failed**. These checks never confirm, void or refund a payment. You can also click **Check CMI** at any time.
 - **Standard Kit:** check the CMI back office and update the order yourself.
 
 WooCommerce's **Hold stock** setting (**WooCommerce → Settings → Products → Inventory**) can cancel unpaid orders automatically. Leave it empty, or set it long enough for the plugin's first check to run first.

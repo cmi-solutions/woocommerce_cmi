@@ -2,7 +2,7 @@
 defined('ABSPATH') || exit;
 
 /**
- * Utitlity class for load supported classes after woocommerce loaded
+ * Checkout Blocks and HPOS support: declared to WooCommerce, and the CMI payment method registered for Blocks.
  *
  * @link       https://www.cmi.co.ma
  * @since      2.0.0
@@ -15,7 +15,7 @@ defined('ABSPATH') || exit;
 /**
  * Custom function to declare compatibility with cart_checkout_blocks and HPOS features
  */
-function ph_declare_cart_checkout_blocks_compatibility()
+function cmi_declare_cart_checkout_blocks_compatibility()
 {
     // Check if the required class exists
     if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
@@ -27,13 +27,13 @@ function ph_declare_cart_checkout_blocks_compatibility()
     }
 }
 // Hook the custom function to the 'before_woocommerce_init' action
-add_action('before_woocommerce_init', 'ph_declare_cart_checkout_blocks_compatibility');
+add_action('before_woocommerce_init', 'cmi_declare_cart_checkout_blocks_compatibility');
 
 
 /**
  * Custom function to register a payment method type.
  */
-function ph_register_order_approval_payment_method_type()
+function cmi_register_blocks_payment_method_type()
 {
     // Check if the required class exists
     if (!class_exists('Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType')) {
@@ -53,4 +53,4 @@ function ph_register_order_approval_payment_method_type()
 }
 
 // Hook the custom function to the 'woocommerce_blocks_loaded' action
-add_action('woocommerce_blocks_loaded', 'ph_register_order_approval_payment_method_type');
+add_action('woocommerce_blocks_loaded', 'cmi_register_blocks_payment_method_type');

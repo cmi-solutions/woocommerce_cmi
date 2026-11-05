@@ -14,7 +14,7 @@
 	Tested up to: 7.1.4
 	Requires PHP: 8.3
 	WC requires at least: 9.0
-	WC tested up to: 11.0.1
+	WC tested up to: 11.2.2
 */
 
 defined('ABSPATH') || exit;
@@ -66,6 +66,7 @@ function woocommerce_cmi_init()
 	require_once plugin_dir_path(__FILE__) . 'classes/class-cmi-payment-state.php';
 	require_once plugin_dir_path(__FILE__) . 'classes/class-cmi-currency.php';
 	require_once plugin_dir_path(__FILE__) . 'classes/class-cmi-transaction-guard.php';
+	require_once plugin_dir_path(__FILE__) . 'classes/class-cmi-protocol.php';
 	require_once plugin_dir_path(__FILE__) . 'classes/cmi.class.php';
 
 	add_filter('woocommerce_payment_gateways', 'woocommerce_cmi_add_gateway');
@@ -96,5 +97,5 @@ function woocommerce_cmi_add_gateway($methods)
 	return $methods;
 } // End woocommerce_cmi_add_gateway()
 
-// Include the CMI Block loadder
+// Include the CMI Blocks loader
 require plugin_dir_path(__FILE__) . 'block/class-cmi-block-loader.php';

@@ -1,58 +1,27 @@
 <?php
 defined('ABSPATH') || exit;
 /**
- * cmi Payment Gateway
+ * CMI payment gateway for WooCommerce.
  *
- * Provides a cmi Payment Gateway.
+ * - Settings: form fields, saving and checks (kit, Store Key, exchange rates).
+ * - Checkout: payment request signed for CMI's hosted payment page (process_payment, generate_cmi_form).
+ * - CMI messages: server callback (check_CMI_response), customer return (handle_payment_return),
+ *   customer cancellation (handle_customer_cancellation).
+ * - Complete Kit: Confirm, Void, Refund and Check CMI through CMI's API, from the orders list
+ *   and the order page, plus automatic checks of orders left pending.
+ * - Currencies: MAD amount charged and rate recorded on each order, used for refunds.
  *
- * @class 		woocommerce_cmi
- * @package		WooCommerce
- * @category	Payment Gateways
- * @author		CMI - CMI
+ * Signatures, API requests and cleaned values are built by Cmi_Protocol.
  *
- *
- * Table Of Contents
- *
- * __construct() 
- * init_form_fields()
- * setup_constants() 
- * plugin_url()
- * is_valid_for_use()
- * admin_options()
- * payment_fields()
- * generate_cmi_form()
- * process_payment()
- * receipt_page()
- * check_CMI_request_is_valid()
- * check_CMI_response()
- * successful_request()
- * check_amounts()
+ * @package WooCommerce
+ * @author  CMI
  */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class WC_Gateway_cmi extends WC_Payment_Gateway
 {
 
 	public $version = '2.0.0';
-	protected string $debug_email;
 	protected string $plugin_url;
-	protected array $available_countries;
-	protected array $available_currencies;
 	protected array $currency_details;
-	protected array $data_to_send;
 	protected string $merchant_id;
 	protected string $actionslk;
 	protected string $SLKSecretkey;
@@ -98,14 +67,6 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		$this->icon = $this->plugin_url() . '/assets/images/cb.png';
 		$this->has_fields = true;
 		$this->supports = array('products', 'refunds');
-		$this->debug_email = get_option('admin_email');
-
-		// Setup available countries.
-		$this->available_countries = array('FR');
-
-		// Setup available currency codes.
-		$this->available_currencies = array('MAD');
-
 		// Load the form fields.
 		$this->init_form_fields();
 
@@ -113,9 +74,6 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		$this->init_settings();
 		$this->migrate_legacy_settings();
 		$this->init_settings();
-
-		// Setup constants.
-		$this->setup_constants();
 
 		// Setup default merchant data.
 		$this->merchant_id = $this->get_config_value('client_id', 'merchant_id');
@@ -153,9 +111,6 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		add_action('woocommerce_api_wc_gateway_cmi', array($this, 'check_CMI_response'));
 		add_action('woocommerce_api_wc_gateway_cmi_return', array($this, 'handle_payment_return'));
 		add_action('woocommerce_api_wc_gateway_cmi_cancel', array($this, 'handle_customer_cancellation'));
-		/* 1.0.1 */
-		add_action('woocommerce_update_options_payment_gateways', array($this, 'process_admin_options'));
-		/* 1.0 */
 		add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
 		add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'save_currency_details'));
 		add_action('woocommerce_receipt_cmi', array($this, 'receipt_page'));
@@ -215,7 +170,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			'confirmation_mode' => array(
 				'title' => __('Payment Confirmation', 'cmi'),
 				'type' => 'select',
-				'description' => __('<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. If the order stays pending, the plugin also checks CMI automatically (Complete Kit), and you can use Check CMI at any time.', 'cmi'),
+				'description' => __('<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit.<br>In both modes, if an order stays pending after a payment, the plugin checks CMI automatically (Complete Kit), and you can use Check CMI at any time.', 'cmi'),
 				'default' => 'automatic',
 				'options' => array(
 					'automatic' => __('Automatic — Capture payment immediately', 'cmi'),
@@ -396,12 +351,17 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		$new_defaults = array(
 			// The Complete Kit needs the API credentials: without them, start with the Standard Kit.
 			'kit_type' => $has_api_credentials ? 'complete' : 'standard',
-			'offshore_account' => 'no',
-			'offshore_currency' => 'EUR',
 		);
 		foreach ($new_defaults as $key => $default) {
 			if (!isset($settings[$key]) || $settings[$key] === '') {
 				$settings[$key] = $default;
+				$changed = true;
+			}
+		}
+		// Settings that no longer exist in the form (written by 2.0.0 on every install).
+		foreach (array('offshore_account', 'offshore_currency') as $removed) {
+			if (array_key_exists($removed, $settings)) {
+				unset($settings[$removed]);
 				$changed = true;
 			}
 		}
@@ -492,19 +452,14 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 							<?php
 							$i = -1;
 							$wc_currencies = get_woocommerce_currencies();
-							$selctHtml = '';
 							if ($this->currency_details) {
 								foreach ($this->currency_details as $currency) {
-									$selctHtml = '';
-									foreach ($wc_currencies as $k => $wc_currency) {
-										$selctHtml .= '<option ' . selected($currency['currency_code'], $k, 0) . 'value="' . esc_attr($k) . '" >' . $k . '-' . esc_html($wc_currency) . ' (' . get_woocommerce_currency_symbol($k) . ')</option>';
-									}
 									$i++;
 
 									echo '<tr class="currency">
 										<td class="sort"></td>';
-									echo '<td><select name="cmi_currency_code[' . esc_attr($i) . ']"class="vi-ui select2">';
-									echo $selctHtml;
+									echo '<td><select name="cmi_currency_code[' . esc_attr($i) . ']" class="vi-ui select2">';
+									echo $this->currency_options_html($wc_currencies, (string) ($currency['currency_code'] ?? ''));
 									echo '</select></td>';
 									echo '<td><input type="text" value="' . esc_attr($currency['currency_rate']) . '" name="cmi_currency_rate[' . esc_attr($i) . ']" /></td>
 									</tr>';
@@ -514,7 +469,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 						</tbody>
 						<tfoot>
 							<tr>
-								<th colspan="7"><a href="#"
+								<th colspan="3"><a href="#"
 										class="add button"><?php esc_html_e('+ Add currency', 'cmi'); ?></a> <a
 										href="#"
 										class="remove_rows button"><?php esc_html_e('Remove selected currency(s)', 'cmi'); ?></a>
@@ -524,11 +479,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 					</table>
 				</div>
 				<?php
-				$wc_currencies = get_woocommerce_currencies();
-				$currOptions = '';
-				foreach ($wc_currencies as $k => $wc_currency) {
-					$currOptions .= '<option value="' . esc_attr($k) . '" >' . $k . '-' . esc_html($wc_currency) . ' (' . get_woocommerce_currency_symbol($k) . ')</option>';
-				}
+				$currency_options = $this->currency_options_html($wc_currencies);
 				?>
 				<script type="text/javascript">
 					jQuery(function () {
@@ -542,7 +493,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 
 							jQuery('<tr class="currency">\
 											<td class="sort"></td>\
-											<td><select name="cmi_currency_code[' + size + ']" class="vi-ui select2"><?php echo $currOptions; ?></select></td>\
+											<td><select name="cmi_currency_code[' + size + ']" class="vi-ui select2">' + <?php echo wp_json_encode($currency_options); ?> + '</select></td>\
 											<td><input type="text" name="cmi_currency_rate[' + size + ']" /></td>\
 										</tr>').appendTo('#cmi_currencies table tbody');
 
@@ -556,6 +507,18 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		return ob_get_clean();
 
 	}
+	/** The currency list of the exchange rates table, every value escaped. */
+	private function currency_options_html(array $wc_currencies, string $selected = ''): string
+	{
+		$html = '';
+		foreach ($wc_currencies as $code => $name) {
+			$html .= '<option value="' . esc_attr($code) . '"' . selected($selected, $code, false) . '>'
+				. esc_html($code . '-' . $name . ' (' . html_entity_decode(get_woocommerce_currency_symbol($code), ENT_QUOTES, 'UTF-8') . ')')
+				. '</option>';
+		}
+		return $html;
+	}
+
 	/**									  
 	 * Save currency details table.
 	 */
@@ -614,18 +577,6 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 	} // End plugin_url()
 
 	/**
-	 * is_valid_for_use()
-	 *
-	 * Check if this gateway is enabled and available.
-	 *
-	 * @since 1.0.0
-	 */
-	function is_valid_for_use()
-	{
-		return true;
-	}
-
-	/**
 	 * Check if gateway is available at checkout.
 	 */
 	public function is_available()
@@ -681,6 +632,16 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			.form-table td.forminp select {
 				min-width: 320px;
 				max-width: 100%;
+			}
+			/* Exchange rates table: its fields fill their column, and the table scrolls on narrow
+			   screens instead of hiding the currency column and the "+ Add currency" button. */
+			#cmi_currencies .wc_input_table_wrapper {
+				overflow-x: auto;
+			}
+			#cmi_currencies td select,
+			#cmi_currencies td input[type="text"] {
+				min-width: 0;
+				width: 100%;
 			}
 			.cmi-password-wrap {
 				position: relative;
@@ -777,13 +738,6 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 				var $apiSectionTitle = $('#woocommerce_cmi_section_api_credentials');
 				$apiSectionTitle.toggle(isCompleteKit);
 				$apiSectionTitle.next('p').toggle(isCompleteKit);
-
-				$('h3, th').filter(function() {
-					return $(this).text().indexOf('API Management Credentials') !== -1;
-				}).each(function() {
-					$(this).toggle(isCompleteKit);
-					$(this).next('p').toggle(isCompleteKit);
-				});
 
 				// Exchange rates: show manual table OR plugin info, depending on mode
 				var exchangeMode = $('#woocommerce_cmi_exchange_rates').val();
@@ -1091,13 +1045,13 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			'hashAlgorithm' => "ver3",
 			'tranType' => "PreAuth",
 			'email' => $order->get_billing_email(),
-			'BillToName' => $this->str_without_accents(trim($order->get_billing_first_name() . " " . $order->get_billing_last_name())),
-			'BillToStreet1' => $this->str_without_accents(trim($order->get_billing_address_1())),
-			'BillToCity' => $this->str_without_accents(trim($order->get_billing_city())),
-			'BillToStateProv' => $this->str_without_accents(trim($order->get_billing_state())),
-			'BillToCountry' => $this->str_without_accents(trim($order->get_billing_country())),
-			'BillToPostalCode' => $this->str_without_accents(trim($order->get_billing_postcode())),
-			'BillToTelVoice' => $this->str_without_accents(trim($order->get_billing_phone())),
+			'BillToName' => Cmi_Protocol::without_accents(trim($order->get_billing_first_name() . " " . $order->get_billing_last_name())),
+			'BillToStreet1' => Cmi_Protocol::without_accents(trim($order->get_billing_address_1())),
+			'BillToCity' => Cmi_Protocol::without_accents(trim($order->get_billing_city())),
+			'BillToStateProv' => Cmi_Protocol::without_accents(trim($order->get_billing_state())),
+			'BillToCountry' => Cmi_Protocol::without_accents(trim($order->get_billing_country())),
+			'BillToPostalCode' => Cmi_Protocol::without_accents(trim($order->get_billing_postcode())),
+			'BillToTelVoice' => Cmi_Protocol::without_accents(trim($order->get_billing_phone())),
 			'oid' => $cmi_oid,
 			'refreshtime' => "5",
 			'instalment' => "",
@@ -1118,36 +1072,11 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			$data['amountCur'] = $totalAmountTx;
 			$data['symbolCur'] = $order_currency;
 		}
-		$postParams = array();
-		foreach ($data as $key => $value) {
-			array_push($postParams, $key);
-		}
+		$data['hash'] = Cmi_Protocol::request_hash($data, $this->SLKSecretkey);
 
-		natcasesort($postParams);
-
-		$hashval = "";
-		foreach ($postParams as $param) {
-			$paramValue = trim(html_entity_decode(html_entity_decode($data[$param])));
-			$escapedParamValue = str_replace("|", "\\|", str_replace("\\", "\\\\", $paramValue));
-
-			$lowerParam = strtolower($param);
-			if ($lowerParam != "hash" && $lowerParam != "encoding") {
-				$hashval = $hashval . $escapedParamValue . "|";
-			}
-		}
-
-		$escapedStoreKey = str_replace("|", "\\|", str_replace("\\", "\\\\", $this->SLKSecretkey));
-		$hashval = $hashval . $escapedStoreKey;
-
-		$calculatedHashValue = hash('sha512', $hashval);
-		$hash = base64_encode(pack('H*', $calculatedHashValue));
-
-		$data['hash'] = $hash;
-
-		$this->data_to_send = $data;
 		$cmi_args_array = array();
 
-		foreach ($this->data_to_send as $key => $value) {
+		foreach ($data as $key => $value) {
 			$cmi_args_array[] = '<input type="hidden" name="' . esc_attr($key) . '" value="' . esc_attr(trim((string) $value)) . '" />';
 		}
 		// exit;
@@ -1219,7 +1148,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 
 		// CMI receives the name in Latin letters only (accents removed, like CMI's own PHP example).
 		// A name with no Latin letter at all, such as one typed in Arabic, would reach CMI empty.
-		if (trim($this->str_without_accents($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()), " -_") === '') {
+		if (trim(Cmi_Protocol::without_accents($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()), " -_") === '') {
 			wc_add_notice(__('To pay by card with CMI, please enter your first and last name in Latin letters (for example: Mohamed Alami).', 'cmi'), 'error');
 			return array('result' => 'failure');
 		}
@@ -1253,7 +1182,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 	}
 
 	/**
-	 * Reciept page.
+	 * Receipt page.
 	 *
 	 * Display text and a button to direct the user to cmi.
 	 *
@@ -1292,18 +1221,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			return new WP_Error('cmi_invalid_callback', __('CMI callback does not identify a valid order.', 'cmi'));
 		}
 
-		$parameters = array_keys($data);
-		natcasesort($parameters);
-		$hash_value = '';
-		foreach ($parameters as $parameter) {
-			if (in_array(strtolower($parameter), array('hash', 'encoding'), true)) {
-				continue;
-			}
-			$value = html_entity_decode(preg_replace("/\n$/", '', $data[$parameter]), ENT_QUOTES, 'UTF-8');
-			$hash_value .= str_replace('|', '\\|', str_replace('\\', '\\\\', $value)) . '|';
-		}
-		$hash_value .= str_replace('|', '\\|', str_replace('\\', '\\\\', $this->SLKSecretkey));
-		$expected_hash = base64_encode(pack('H*', hash('sha512', $hash_value)));
+		$expected_hash = Cmi_Protocol::callback_hash($data, $this->SLKSecretkey);
 
 		if (!hash_equals($expected_hash, (string) $data['HASH'])) {
 			wc_get_logger()->warning('CMI callback rejected because its hash signature is invalid.', array(
@@ -1396,7 +1314,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		$target_status = $this->get_postauth_order_status();
 		$this->set_order_payment_status($order, self::PAYMENT_STATUS_CONFIRMED, $transaction);
 		$order->payment_complete($transaction['TransId'] ?? '');
-		$order->update_status($target_status, sprintf(__('CMI payment confirmed and captured (status set to %s).', 'cmi'), $target_status));
+		$order->update_status($target_status, sprintf(__('CMI payment confirmed and captured (status set to %s).', 'cmi'), wc_get_order_status_name($target_status)));
 		return 'ACTION=POSTAUTH';
 	}
 
@@ -1574,13 +1492,14 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 	}
 
 	/**
-	 * Manual mode has no CMI callback: if the customer doesn't return to the shop, the order
-	 * stays pending while the money is reserved. Schedule status checks to catch that. Each
-	 * new payment attempt restarts them. A scheduling problem must never block the payment.
+	 * An order can stay pending after a payment: the CMI callback failed or never came (both
+	 * modes), or the customer was declined and left (CMI then sends nothing). Schedule status
+	 * checks to catch that. Each new payment attempt restarts them. A scheduling problem must
+	 * never block the payment.
 	 */
 	private function schedule_pending_check(WC_Order $order): void
 	{
-		if ($this->confirmation_mode !== 'manual' || !$this->has_api_configuration() || !function_exists('as_schedule_single_action')) {
+		if (!$this->has_api_configuration() || !function_exists('as_schedule_single_action')) {
 			return;
 		}
 		try {
@@ -1609,12 +1528,14 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 	 */
 	public function check_pending_order(WC_Order $order): void
 	{
-		if ($order->get_payment_method() !== $this->id || !$order->has_status('pending') || $this->confirmation_mode !== 'manual' || !$this->has_api_configuration() || (string) $order->get_meta('_cmi_oid') === '') {
+		if ($order->get_payment_method() !== $this->id || !$order->has_status('pending') || !$this->has_api_configuration() || (string) $order->get_meta('_cmi_oid') === '') {
 			return;
 		}
 
+		$checks_done = (int) $order->get_meta(self::META_PENDING_CHECKS) + 1;
+		$last_check = Cmi_Payment_State::pending_check_delay($checks_done) === null;
 		$status = $this->query_order_status($order);
-		if (!is_wp_error($status) && Cmi_Payment_State::pending_check_applies((string) ($status['TRANS_STAT'] ?? ''))) {
+		if (!is_wp_error($status) && Cmi_Payment_State::pending_check_applies((string) ($status['TRANS_STAT'] ?? ''), $last_check, (string) ($status['ProcReturnCode'] ?? ''))) {
 			$result = $this->sync_order_with_cmi_api($order, $status);
 			// Another site's transaction won't become ours: don't add the same note again.
 			if (!$order->has_status('pending') || ($result['status'] ?? '') === 'FOREIGN') {
@@ -1622,7 +1543,6 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			}
 		}
 
-		$checks_done = (int) $order->get_meta(self::META_PENDING_CHECKS) + 1;
 		$order->update_meta_data(self::META_PENDING_CHECKS, (string) $checks_done);
 		$order->save_meta_data();
 		$delay = Cmi_Payment_State::pending_check_delay($checks_done);
@@ -1916,6 +1836,16 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 	}
 
 	/**
+	 * Counter label of a custom order status ("Label (3)"), in the format register_post_status()
+	 * expects: WordPress reads it with translate_nooped_plural(), which fails on a plain string.
+	 */
+	private static function status_label_count(string $label): array
+	{
+		$text = $label . ' <span class="count">(%s)</span>';
+		return array(0 => $text, 1 => $text, 'singular' => $text, 'plural' => $text, 'context' => null, 'domain' => null);
+	}
+
+	/**
 	 * Get the human-readable display label for the custom order status.
 	 *
 	 * @param string|null $slug Optional custom slug.
@@ -2020,7 +1950,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
-				'label_count'               => $label . ' <span class="count">(%s)</span>',
+				'label_count'               => self::status_label_count($label),
 			);
 		}
 
@@ -2036,7 +1966,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 						'exclude_from_search'       => false,
 						'show_in_admin_all_list'    => true,
 						'show_in_admin_status_list' => true,
-						'label_count'               => self::get_postauth_custom_status_label($truncated_slug) . ' <span class="count">(%s)</span>',
+						'label_count'               => self::status_label_count(self::get_postauth_custom_status_label($truncated_slug)),
 					);
 				}
 			}
@@ -2089,7 +2019,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
-				'label_count'               => $label . ' <span class="count">(%s)</span>',
+				'label_count'               => self::status_label_count($label),
 			));
 		}
 
@@ -2105,7 +2035,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 						'exclude_from_search'       => false,
 						'show_in_admin_all_list'    => true,
 						'show_in_admin_status_list' => true,
-						'label_count'               => self::get_postauth_custom_status_label($truncated_slug) . ' <span class="count">(%s)</span>',
+						'label_count'               => self::status_label_count(self::get_postauth_custom_status_label($truncated_slug)),
 					));
 				}
 			}
@@ -2194,7 +2124,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 					"UPDATE {$hpos_table}
 					 SET status = %s
 					 WHERE status LIKE 'paymentisconfirm%' OR status LIKE 'wc-paymentisconfirm%'",
-					$target_slug
+					'wc-' . $target_slug
 				)
 			);
 		}
@@ -2664,11 +2594,19 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 				submitBtn.disabled = true;
 				submitBtn.innerText = '<?php echo esc_js(__('Processing the refund via the CMI API...', 'cmi')); ?>';
 
-				var targetUrl = cmiRefundState.baseUrl +
-					'&refund_amount=' + encodeURIComponent(refundAmount.toFixed(2)) +
-					(reason ? '&refund_reason=' + encodeURIComponent(reason) : '');
-
-				window.location.href = targetUrl;
+				// Sent as POST: the amount and reason stay out of the URL (history, server logs).
+				var form = document.createElement('form');
+				form.method = 'post';
+				form.action = cmiRefundState.baseUrl;
+				[['refund_amount', refundAmount.toFixed(2)], ['refund_reason', reason]].forEach(function (field) {
+					var input = document.createElement('input');
+					input.type = 'hidden';
+					input.name = field[0];
+					input.value = field[1];
+					form.appendChild(input);
+				});
+				document.body.appendChild(form);
+				form.submit();
 			}
 
 			// --- Global Event Attachments ---
@@ -2801,12 +2739,12 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		if (is_wp_error($result)) {
 			set_transient('cmi_admin_notice_' . get_current_user_id(), array(
 				'type'    => 'error',
-				'message' => sprintf(__('CMI confirmation failed for order #%d: %s', 'cmi'), $order_id, $result->get_error_message()),
+				'message' => sprintf(__('CMI confirmation failed for order %s: %s', 'cmi'), $order->get_order_number(), $result->get_error_message()),
 			), 45);
 		} else {
 			set_transient('cmi_admin_notice_' . get_current_user_id(), array(
 				'type'    => 'success',
-				'message' => sprintf(__('Order #%d confirmed successfully via CMI API.', 'cmi'), $order_id),
+				'message' => sprintf(__('Order %s confirmed successfully via CMI API.', 'cmi'), $order->get_order_number()),
 			), 45);
 		}
 
@@ -2832,12 +2770,12 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		if (is_wp_error($result)) {
 			set_transient('cmi_admin_notice_' . get_current_user_id(), array(
 				'type'    => 'error',
-				'message' => sprintf(__('CMI void/cancellation failed for order #%d: %s', 'cmi'), $order_id, $result->get_error_message()),
+				'message' => sprintf(__('CMI void/cancellation failed for order %s: %s', 'cmi'), $order->get_order_number(), $result->get_error_message()),
 			), 45);
 		} else {
 			set_transient('cmi_admin_notice_' . get_current_user_id(), array(
 				'type'    => 'success',
-				'message' => sprintf(__('Order #%d voided and cancelled successfully via CMI API.', 'cmi'), $order_id),
+				'message' => sprintf(__('Order %s voided and cancelled successfully via CMI API.', 'cmi'), $order->get_order_number()),
 			), 45);
 		}
 
@@ -2858,15 +2796,25 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			wp_die(esc_html__('Invalid order ID.', 'cmi'));
 		}
 
-		$refund_amount = isset($_GET['refund_amount']) && $_GET['refund_amount'] !== '' ? (float) wc_clean(wp_unslash($_GET['refund_amount'])) : null;
-		$reason = isset($_GET['refund_reason']) ? sanitize_text_field(wp_unslash($_GET['refund_reason'])) : '';
+		// The refund window posts the amount and reason. A plain link (GET), e.g. opened
+		// without the window, must never refund: send the merchant back to use it.
+		if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+			set_transient('cmi_admin_notice_' . get_current_user_id(), array(
+				'type'    => 'error',
+				'message' => sprintf(__('CMI refund for order %s was not made: use the Refund button to choose the amount.', 'cmi'), $order->get_order_number()),
+			), 45);
+			wp_safe_redirect(self::get_admin_orders_redirect_url());
+			exit;
+		}
+		$refund_amount = isset($_POST['refund_amount']) && $_POST['refund_amount'] !== '' ? (float) wc_clean(wp_unslash($_POST['refund_amount'])) : null;
+		$reason = isset($_POST['refund_reason']) ? sanitize_text_field(wp_unslash($_POST['refund_reason'])) : '';
 
 		$gateway = self::get_gateway_instance();
 		$result = $gateway->refund_transaction($order, $refund_amount, $reason, false);
 		if (is_wp_error($result)) {
 			set_transient('cmi_admin_notice_' . get_current_user_id(), array(
 				'type'    => 'error',
-				'message' => sprintf(__('CMI refund failed for order #%d: %s', 'cmi'), $order_id, $result->get_error_message()),
+				'message' => sprintf(__('CMI refund failed for order %s: %s', 'cmi'), $order->get_order_number(), $result->get_error_message()),
 			), 45);
 		} else {
 			// Reload order from DB to reflect the newly recorded refund
@@ -2875,8 +2823,8 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			$is_full = $balance === null || $balance['remaining'] <= 0.001;
 
 			$msg = !$is_full
-				? sprintf(__('Partial refund for order #%1$d processed successfully via CMI API. Refunded: %2$s MAD (remaining refundable: %3$s MAD).', 'cmi'), $order_id, number_format($balance['refunded'], 2), number_format($balance['remaining'], 2))
-				: sprintf(__('Order #%1$d fully refunded successfully via CMI API (%2$s MAD).', 'cmi'), $order_id, number_format($balance['total'] ?? 0, 2));
+				? sprintf(__('Partial refund for order %1$s processed successfully via CMI API. Refunded: %2$s MAD (remaining refundable: %3$s MAD).', 'cmi'), $order->get_order_number(), number_format($balance['refunded'], 2), number_format($balance['remaining'], 2))
+				: sprintf(__('Order %1$s fully refunded successfully via CMI API (%2$s MAD).', 'cmi'), $order->get_order_number(), number_format($balance['total'] ?? 0, 2));
 
 			set_transient('cmi_admin_notice_' . get_current_user_id(), array(
 				'type'    => 'success',
@@ -2929,7 +2877,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		$status_label = $result['cmi_status'] ?? $result['status'];
 		set_transient('cmi_admin_notice_' . get_current_user_id(), array(
 			'type'    => $is_success ? 'success' : 'error',
-			'message' => sprintf(__('CMI status for order #%d: [%s] %s', 'cmi'), $order_id, $status_label, $result['message']),
+			'message' => sprintf(__('CMI status for order %s: [%s] %s', 'cmi'), $order->get_order_number(), $status_label, $result['message']),
 		), 45);
 
 		wp_safe_redirect(self::get_admin_orders_redirect_url());
@@ -3230,7 +3178,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			$target_status = $this->get_postauth_order_status();
 			$this->set_order_payment_status($order, self::PAYMENT_STATUS_CONFIRMED, $response);
 			$order->payment_complete($response['TransId'] ?? '');
-			$order->update_status($target_status, sprintf(__('CMI PRE transaction confirmed and captured through the CMI API (status set to %s).', 'cmi'), $target_status));
+			$order->update_status($target_status, sprintf(__('CMI PRE transaction confirmed and captured through the CMI API (status set to %s).', 'cmi'), wc_get_order_status_name($target_status)));
 			return $response;
 		} finally {
 			delete_option($lock_key);
@@ -3583,7 +3531,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 						$cmi_stat_label,
 						$trans_id ?: __('N/A', 'cmi'),
 						$auth_code ?: __('N/A', 'cmi'),
-						$target_status
+						wc_get_order_status_name($target_status)
 					));
 				}
 			}
@@ -3677,78 +3625,20 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			return new WP_Error('cmi_api_not_configured', __('Configure the CMI API URL, username, and password in WooCommerce settings before performing API operations.', 'cmi'));
 		}
 
-		$escape = static function (string $value): string {
-			return htmlspecialchars($value, ENT_XML1 | ENT_QUOTES, 'UTF-8');
-		};
-
-		$name = $escape($this->usernameapi);
-		$password = $escape($this->passwordapi);
-		$client_id = $escape($this->merchant_id);
 		$cmi_oid = $this->get_sent_cmi_oid($order);
-		$order_id = $escape($cmi_oid);
-
-		if ($type === 'Void') {
-			// CMI Void specification: Name, Password, ClientId, Type=Void, OrderId
-			$xml = '<?xml version="1.0" encoding="UTF-8"?>' .
-				'<CC5Request>' .
-				'<Name>' . $name . '</Name>' .
-				'<Password>' . $password . '</Password>' .
-				'<ClientId>' . $client_id . '</ClientId>' .
-				'<Type>Void</Type>' .
-				'<OrderId>' . $order_id . '</OrderId>' .
-				'</CC5Request>';
-		} elseif ($type === 'PostAuth') {
-			// CMI PostAuth specification: Name, Password, ClientId, Type=PostAuth, OrderId, (optional Total for partial)
-			$xml = '<?xml version="1.0" encoding="UTF-8"?>' .
-				'<CC5Request>' .
-				'<Name>' . $name . '</Name>' .
-				'<Password>' . $password . '</Password>' .
-				'<ClientId>' . $client_id . '</ClientId>' .
-				'<Type>PostAuth</Type>' .
-				'<OrderId>' . $order_id . '</OrderId>';
-
-			// $amount is in MAD, like the authorised amount it is compared with.
+		$total = null;
+		if ($type === 'PostAuth') {
+			// $amount is in MAD, like the authorised amount it is compared with. Total only for a partial capture.
 			$mad_details = $this->get_order_mad_details($order);
 			$authorised_mad = $mad_details !== null ? $mad_details['amount'] : (float) $order->get_total();
 			if ($amount !== null && $amount < $authorised_mad) {
-				$xml .= '<Total>' . $escape(number_format($amount, 2, '.', '')) . '</Total>';
+				$total = number_format($amount, 2, '.', '');
 			}
-
-			$xml .= '</CC5Request>';
 		} elseif ($type === 'Credit') {
-			// CMI Credit specification: Name, Password, ClientId, Type=Credit, Total, Currency, OrderId
-			$refund_amount = $amount !== null ? $amount : (float) $order->get_total();
-			$xml = '<?xml version="1.0" encoding="UTF-8"?>' .
-				'<CC5Request>' .
-				'<Name>' . $name . '</Name>' .
-				'<Password>' . $password . '</Password>' .
-				'<ClientId>' . $client_id . '</ClientId>' .
-				'<Type>Credit</Type>' .
-				'<Total>' . $escape(number_format($refund_amount, 2, '.', '')) . '</Total>' .
-				'<Currency>' . $escape($this->get_currency_code()) . '</Currency>' .
-				'<OrderId>' . $order_id . '</OrderId>' .
-				'</CC5Request>';
-		} elseif ($type === 'ORDERSTATUS') {
-			// CMI Order Status specification: Name, Password, ClientId, OrderId, Extra ORDERSTATUS QUERY
-			$xml = '<?xml version="1.0" encoding="UTF-8"?>' .
-				'<CC5Request>' .
-				'<Name>' . $name . '</Name>' .
-				'<Password>' . $password . '</Password>' .
-				'<ClientId>' . $client_id . '</ClientId>' .
-				'<OrderId>' . $order_id . '</OrderId>' .
-				'<Extra><ORDERSTATUS>QUERY</ORDERSTATUS></Extra>' .
-				'</CC5Request>';
-		} elseif ($type === 'ORDERHISTORY') {
-			// CMI Order History specification: every transaction of the OrderId, one TRXn line each
-			$xml = '<?xml version="1.0" encoding="UTF-8"?>' .
-				'<CC5Request>' .
-				'<Name>' . $name . '</Name>' .
-				'<Password>' . $password . '</Password>' .
-				'<ClientId>' . $client_id . '</ClientId>' .
-				'<OrderId>' . $order_id . '</OrderId>' .
-				'<Extra><ORDERHISTORY>QUERY</ORDERHISTORY></Extra>' .
-				'</CC5Request>';
-		} else {
+			$total = number_format($amount !== null ? $amount : (float) $order->get_total(), 2, '.', '');
+		}
+		$xml = Cmi_Protocol::xml_request($type, $this->usernameapi, $this->passwordapi, $this->merchant_id, $cmi_oid, $total, $this->get_currency_code());
+		if ($xml === null) {
 			return new WP_Error('cmi_api_unknown_type', __('Unknown CMI API request type.', 'cmi'));
 		}
 
@@ -3924,109 +3814,33 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		if ($status === '') {
 			return;
 		}
-		$message = $status === self::PAYMENT_STATUS_CONFIRMED
-			? __('Your CMI payment was confirmed.', 'cmi')
-			: ($status === self::PAYMENT_STATUS_PRE_CONFIRMATION_REQUIRED
-				? __('Your payment was authorized and awaits merchant confirmation.', 'cmi')
-				: ($status === self::PAYMENT_STATUS_VOIDED
-					? __('The CMI transaction was voided by the merchant.', 'cmi')
-					: ($status === self::PAYMENT_STATUS_CLIENT_CANCELLED
-						? __('You cancelled the payment.', 'cmi')
-						: __('The CMI payment was not completed.', 'cmi'))));
-		echo '<section class="woocommerce-cmi-payment-result"><h2>' . esc_html__('CMI payment result', 'cmi') . '</h2><p><strong>' . esc_html($this->payment_status_label($status)) . '</strong> — ' . esc_html($message) . '</p></section>';
-	}
-
-	/**
-	 * Setup constants.
-	 *
-	 * Setup common values and messages used by the cmi gateway.
-	 *
-	 * @since 1.0.0
-	 */
-	function setup_constants()
-	{
-		if (!defined('BPI_SOFTWARE_NAME')) {
-			define('BPI_SOFTWARE_NAME', 'WooCommerce');
+		// Plain words for the customer; the technical state names stay in the admin.
+		switch ($status) {
+			case self::PAYMENT_STATUS_CONFIRMED:
+				$label = __('Payment successful', 'cmi');
+				$message = __('Your CMI payment was confirmed.', 'cmi');
+				break;
+			case self::PAYMENT_STATUS_PRE_CONFIRMATION_REQUIRED:
+				$label = __('Payment authorized', 'cmi');
+				$message = __('Your payment was authorized and awaits merchant confirmation.', 'cmi');
+				break;
+			case self::PAYMENT_STATUS_VOIDED:
+				$label = __('Payment cancelled', 'cmi');
+				$message = __('The merchant cancelled this payment. You were not charged.', 'cmi');
+				break;
+			case self::PAYMENT_STATUS_CLIENT_CANCELLED:
+				$label = __('Payment cancelled', 'cmi');
+				$message = __('You cancelled the payment.', 'cmi');
+				break;
+			case self::PAYMENT_STATUS_REFUNDED:
+				$label = __('Payment refunded', 'cmi');
+				$message = __('This payment was refunded.', 'cmi');
+				break;
+			default:
+				$label = __('Payment not completed', 'cmi');
+				$message = __('The CMI payment was not completed.', 'cmi');
 		}
-		if (!defined('BPI_SOFTWARE_VER')) {
-			define('BPI_SOFTWARE_VER', WC()->version);
-		}
-		if (!defined('BPI_MODULE_NAME')) {
-			define('BPI_MODULE_NAME', 'WooCommerce-cmi-Free');
-		}
-		if (!defined('BPI_MODULE_VER')) {
-			define('BPI_MODULE_VER', $this->version);
-		}
-
-		// Features
-		// - PHP
-		$pfFeatures = 'PHP ' . phpversion() . ';';
-
-		// - cURL
-		if (in_array('curl', get_loaded_extensions())) {
-			// define( 'BPI_CURL', '' );
-			if (!defined('BPI_CURL')) {
-				define('BPI_CURL', '');
-			}
-			$pfVersion = curl_version();
-			$pfFeatures .= ' curl ' . $pfVersion['version'] . ';';
-		} else
-			$pfFeatures .= ' nocurl;';
-
-		// Create user agrent
-		// define( 'BPI_USER_AGENT', BPI_SOFTWARE_NAME .'/'. BPI_SOFTWARE_VER .' ('. trim( $pfFeatures ) .') '. BPI_MODULE_NAME .'/'. BPI_MODULE_VER );
-		if (!defined('BPI_USER_AGENT')) {
-			define('BPI_USER_AGENT', BPI_SOFTWARE_NAME . '/' . BPI_SOFTWARE_VER . ' (' . trim($pfFeatures) . ') ' . BPI_MODULE_NAME . '/' . BPI_MODULE_VER);
-		}
-
-		// General Defines
-		if (!defined('BPI_TIMEOUT')) {
-			define('BPI_TIMEOUT', 15);
-		}
-		if (!defined('BPI_EPSILON')) {
-			define('BPI_EPSILON', 0.01);
-		}
-
-		// Messages
-		// Error
-		if (!defined('BPI_ERR_AMOUNT_MISMATCH')) {
-			define('BPI_ERR_AMOUNT_MISMATCH', __('Amount mismatch', 'cmi'));
-		}
-		if (!defined('BPI_ERR_BAD_ACCESS')) {
-			define('BPI_ERR_BAD_ACCESS', __('Bad access of page', 'cmi'));
-		}
-		if (!defined('BPI_ERR_INVALID_SIGNATURE')) {
-			define('BPI_ERR_INVALID_SIGNATURE', __('Security signature mismatch', 'cmi'));
-		}
-
-	} // End setup_constants()
-
-
-
-	/**
-	 * check_amounts()
-	 *
-	 * Checks if received amount is equal to sent amount
-	 *
-	 * @param $amount1 Float 1st amount for comparison
-	 * @param $amount2 Float 2nd amount for comparison
-	 * @since 1.0.0
-	 */
-	function check_amounts($amount1, $amount2)
-	{
-		if (number_format($amount1) !== number_format($amount2))
-			return false;
-		return true;
-	} // End check_amounts()
-
-	function str_without_accents($str, $charset = 'utf-8')
-	{
-		$str = htmlentities($str, ENT_NOQUOTES, $charset);
-		$str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
-		$str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str);
-		$str = preg_replace('#&[^;]+;#', '', $str);
-		$str = preg_replace('/[^a-zA-Z0-9_ -]/s', '', $str);
-		return $str;
+		echo '<section class="woocommerce-cmi-payment-result"><h2>' . esc_html__('CMI payment result', 'cmi') . '</h2><p><strong>' . esc_html($label) . '</strong> — ' . esc_html($message) . '</p></section>';
 	}
 
 	/**
@@ -4041,15 +3855,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 	 */
 	public function sanitize_cmi_oid(string $raw_oid): string
 	{
-		if (function_exists('remove_accents')) {
-			$clean = remove_accents($raw_oid);
-		} else {
-			$clean = $this->str_without_accents($raw_oid);
-		}
-		// Strip all whitespace and characters that are NOT alphanumeric, hyphen, or underscore
-		$clean = preg_replace('/[^a-zA-Z0-9_-]/', '', $clean);
-		// Enforce CMI maximum length of 64 characters
-		return substr((string) $clean, 0, 64);
+		return Cmi_Protocol::sanitize_oid($raw_oid);
 	}
 
 	/**
@@ -4070,12 +3876,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		$raw_number = (string) $order->get_order_number();
 		self::$use_raw_order_number = false;
 
-		$sanitized = $this->sanitize_cmi_oid($raw_number);
-
-		// Fallback to internal order ID if sanitized order number is empty
-		if ($sanitized === '') {
-			$sanitized = (string) $order->get_id();
-		}
+		$sanitized = Cmi_Protocol::oid_for_number($raw_number, $order->get_id());
 		if ($with_prefix) {
 			$sanitized = Cmi_Transaction_Guard::apply_oid_prefix($this->order_id_prefix, $sanitized);
 		}

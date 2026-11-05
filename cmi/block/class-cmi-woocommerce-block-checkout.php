@@ -54,6 +54,9 @@ final class WC_Cmi_Blocks extends AbstractPaymentMethodType
     {
 
         $script_path = plugins_url('assets/js/cmi-block.js', __DIR__);
+        // The file's date as version: browsers load the new script after each plugin update.
+        $script_file = dirname(__DIR__) . '/assets/js/cmi-block.js';
+        $script_version = file_exists($script_file) ? (string) filemtime($script_file) : '2.0.0';
         $dependancies = [
             'react',
             'wp-blocks',
@@ -68,7 +71,7 @@ final class WC_Cmi_Blocks extends AbstractPaymentMethodType
             'wc-cmi-blocks-integration',
             $script_path,
             $dependancies,
-            '1.0.0',
+            $script_version,
             true
         );
 

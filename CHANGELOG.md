@@ -12,6 +12,27 @@
 - The **Complete Kit** now requires the API credentials. Saving the Complete Kit without the API URL, username and password keeps the Standard Kit and asks you to enter them. A Complete Kit saved earlier without them works like the Standard Kit, with a warning on the settings page. New installs start with the Standard Kit.
 - With the Standard Kit, the plugin no longer calls the CMI API, even if API credentials were entered.
 - The Payment Confirmation setting no longer states a delay before the automatic checks.
+- A custom order status (set in **Order status after capture**) no longer causes an error when WooCommerce counts orders by status.
+- The one-time repair of old truncated order statuses now writes a valid status with HPOS storage. Before, repaired orders disappeared from the orders list.
+- The exchange rates table fits its frame: the currency column and **+ Add currency** are no longer hidden.
+- Messages shown after Confirm, Void, Refund or Check CMI now give the order number seen in WooCommerce and in the CMI back office (for example `WCA247-1050`), not the internal number.
+- The thank-you page shows plain words to the customer ("Payment successful", "Payment authorized"…) instead of technical names such as `PRE_CONFIRMATION_REQUIRED`. A refunded payment is no longer shown as "not completed".
+- Order notes name the order status as WooCommerce shows it (for example "Processing"), not its code.
+
+### Changed
+
+- **Automatic checks of pending orders (Complete Kit) now run in both confirmation modes.** In Automatic mode they catch a payment whose CMI notification never reached the shop. In both modes, an order whose payment is still declined at the last check is marked **Failed** instead of staying **Pending payment**.
+- A refund from the orders list is sent with the amount and reason in the request body, no longer in the address. Opening the Refund link without the refund window no longer refunds anything.
+- The Checkout Blocks script is reloaded by browsers after each update.
+
+### Removed
+
+- Unused code inherited from older versions: the `offshore_account` and `offshore_currency` settings (also removed from existing installs), unused constants and functions, and a WooCommerce 1.x hook.
+
+### For developers
+
+- Signatures, API requests and cleaned values are built in one class (`Cmi_Protocol`), and the provided tests run that code instead of copies of it.
+- The Checkout Blocks functions are prefixed `cmi_` (`cmi_declare_cart_checkout_blocks_compatibility`, `cmi_register_blocks_payment_method_type`).
 
 ## 2.0.0
 

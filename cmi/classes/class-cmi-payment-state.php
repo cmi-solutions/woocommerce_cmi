@@ -102,13 +102,24 @@ final class Cmi_Payment_State
 	}
 
 	/**
-	 * Whether an automatic check should update a pending order from this TRANS_STAT: only for
-	 * a final state of a real payment. "Not found", declined and in-progress results change
-	 * nothing, because the customer may still be paying.
+	 * Whether an automatic check should update a pending order from CMI's status.
+	 *
+	 * A final state of a real payment (pre-authorized, captured, settled, voided) always does.
+	 * A declined payment only on the last check: until then the customer may still retry.
+	 * "Not found" and in-progress results never do (nothing was paid).
+	 *
+	 * @param string $trans_stat  CMI's TRANS_STAT.
+	 * @param bool   $last_check  Whether no check follows this one.
+	 * @param string $proc_code   CMI's ProcReturnCode ('' when not reported).
 	 */
-	public static function pending_check_applies(string $trans_stat): bool
+	public static function pending_check_applies(string $trans_stat, bool $last_check = false, string $proc_code = ''): bool
 	{
-		return in_array(strtoupper(trim($trans_stat)), array('A', 'C', 'S', 'V'), true);
+		$trans_stat = strtoupper(trim($trans_stat));
+		if (in_array($trans_stat, array('A', 'C', 'S', 'V'), true)) {
+			return true;
+		}
+		$proc_code = trim($proc_code);
+		return $last_check && ($trans_stat === 'D' || ($proc_code !== '' && $proc_code !== '00'));
 	}
 
 	/**
