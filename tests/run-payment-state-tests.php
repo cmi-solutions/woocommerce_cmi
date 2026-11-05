@@ -97,6 +97,16 @@ assert_false(Cmi_Payment_State::can_offer_confirmation(Cmi_Payment_State::VOIDED
 assert_false(Cmi_Payment_State::can_offer_confirmation(Cmi_Payment_State::FAILED, 'failed', 'completed'), 'Declined payment: no Confirm/Void');
 assert_false(Cmi_Payment_State::can_offer_confirmation(Cmi_Payment_State::CLIENT_CANCELLED, 'cancelled', 'completed'), 'Cancelled order: no Confirm/Void');
 
+// Refund is offered only for a captured payment
+assert_false(Cmi_Payment_State::is_captured(Cmi_Payment_State::INITIATED, 'pending', false, 'completed'), 'Pending order: no Refund');
+assert_false(Cmi_Payment_State::is_captured('', 'pending', false, 'completed'), 'Pending order with no CMI state: no Refund');
+assert_false(Cmi_Payment_State::is_captured(Cmi_Payment_State::FAILED, 'failed', false, 'completed'), 'Failed order: no Refund');
+assert_false(Cmi_Payment_State::is_captured(Cmi_Payment_State::PRE_CONFIRMATION_REQUIRED, 'on-hold', false, 'completed'), 'Pre-authorized order on hold: no Refund (it is voided)');
+assert_false(Cmi_Payment_State::is_captured(Cmi_Payment_State::CLIENT_CANCELLED, 'cancelled', false, 'completed'), 'Cancelled order: no Refund');
+assert_true(Cmi_Payment_State::is_captured(Cmi_Payment_State::CONFIRMED, 'processing', true, 'completed'), 'Captured order: Refund offered');
+assert_true(Cmi_Payment_State::is_captured('', 'cmi-paye', false, 'cmi-paye'), 'Order in the custom captured status: Refund offered');
+assert_true(Cmi_Payment_State::is_captured(Cmi_Payment_State::REFUNDED, 'processing', true, 'completed'), 'Partly refunded order: Refund still offered');
+
 // Terminal states
 assert_true(Cmi_Payment_State::is_terminal(Cmi_Payment_State::CONFIRMED), 'CONFIRMED is a terminal state');
 assert_true(Cmi_Payment_State::is_terminal(Cmi_Payment_State::FAILED), 'FAILED is a terminal state');

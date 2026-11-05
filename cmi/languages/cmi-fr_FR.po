@@ -868,3 +868,6 @@ msgstr "nécessite que WooCommerce soit activé."
 
 msgid "Accept card payments through CMI's secure hosted payment page."
 msgstr "Acceptez les paiements par carte via la page de paiement sécurisée hébergée par CMI."
+
+msgid "To pay by card with CMI, please enter your first and last name in Latin letters (for example: Mohamed Alami)."
+msgstr "Pour payer par carte avec CMI, veuillez saisir votre prénom et votre nom en lettres latines (par exemple : Mohamed Alami)."

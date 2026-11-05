@@ -58,6 +58,25 @@ final class Cmi_Payment_State
 		return $payment_state === self::PRE_CONFIRMATION_REQUIRED || $order_status === 'on-hold';
 	}
 
+	/**
+	 * Whether CMI has captured the order's payment, so a refund can apply to it.
+	 *
+	 * A Pending, Failed or Cancelled order has no captured payment, and neither has a
+	 * pre-authorization On hold (it is voided, not refunded).
+	 *
+	 * @param string $payment_state   The order's CMI payment state ('' when not stored).
+	 * @param string $order_status    WooCommerce order status, without "wc-".
+	 * @param bool   $is_paid         WC_Order::is_paid().
+	 * @param string $postauth_status Status the merchant set for captured orders.
+	 */
+	public static function is_captured(string $payment_state, string $order_status, bool $is_paid, string $postauth_status): bool
+	{
+		return $payment_state === self::CONFIRMED
+			|| $payment_state === self::REFUNDED
+			|| $is_paid
+			|| in_array($order_status, array('processing', 'completed', 'confirmed', 'refunded', $postauth_status), true);
+	}
+
 	public static function is_terminal(string $status): bool
 	{
 		return in_array($status, array(self::FAILED, self::CLIENT_CANCELLED, self::VOIDED, self::REFUNDED, self::CONFIRMED), true);

@@ -122,6 +122,8 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		$this->actionslk = $this->get_config_value('gateway_url', 'actionslk');
 		$this->SLKSecretkey = $this->get_config_value('store_key', 'SLKSecretkey');
 		$this->title = (string) $this->get_option('title', __('CMI', 'cmi'));
+		// Read by the Checkout Blocks integration (the classic checkout uses payment_fields()).
+		$this->description = (string) $this->get_option('description', '');
 		$this->confirmation_mode = $this->normalise_confirmation_mode((string) $this->get_option('confirmation_mode', 'automatic'));
 		$this->postauth_status = $this->get_postauth_order_status();
 		$this->postauth_custom_status = self::sanitize_custom_status_slug((string) $this->get_option('postauth_custom_status', ''));
@@ -526,13 +528,17 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 				?>
 				<script type="text/javascript">
 					jQuery(function () {
+						// Index for the next new row. It only ever grows: after a row is removed, the
+						// number of rows can equal an index still in use, and the duplicate would be lost.
+						var nextIndex = jQuery('#cmi_currencies').find('tbody .currency').length;
+
 						jQuery('#cmi_currencies').on('click', 'a.add', function () {
 
-							var size = jQuery('#cmi_currencies').find('tbody .currency').length;
+							var size = nextIndex++;
 
 							jQuery('<tr class="currency">\
 											<td class="sort"></td>\
-											<td><select name="cmi_currency_code[' + size + ']"class="vi-ui select2"><?php echo $currOptions; ?></select></td>\
+											<td><select name="cmi_currency_code[' + size + ']" class="vi-ui select2"><?php echo $currOptions; ?></select></td>\
 											<td><input type="text" name="cmi_currency_rate[' + size + ']" /></td>\
 										</tr>').appendTo('#cmi_currencies table tbody');
 
@@ -1202,6 +1208,13 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			return array('result' => 'failure');
 		}
 
+		// CMI receives the name in Latin letters only (accents removed, like CMI's own PHP example).
+		// A name with no Latin letter at all, such as one typed in Arabic, would reach CMI empty.
+		if (trim($this->str_without_accents($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()), " -_") === '') {
+			wc_add_notice(__('To pay by card with CMI, please enter your first and last name in Latin letters (for example: Mohamed Alami).', 'cmi'), 'error');
+			return array('result' => 'failure');
+		}
+
 		$mad = $this->calculate_mad_amount($order);
 		if (is_wp_error($mad)) {
 			wc_add_notice($mad->get_error_message(), 'error');
@@ -1745,7 +1758,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			}
 		}
 		// 2. POST Transactions (Confirmed / Captured / Paid / Partially Refunded)
-		elseif ($status === self::PAYMENT_STATUS_CONFIRMED || $status === self::PAYMENT_STATUS_REFUNDED || $order->is_paid() || in_array($order_status, array('processing', 'completed', 'confirmed', 'refunded', $custom_target), true)) {
+		elseif (Cmi_Payment_State::is_captured($status, $order_status, $order->is_paid(), $custom_target)) {
 			// Refunds are made in MAD, the currency CMI charged.
 			$balance = $gateway->get_refund_balance_mad($order);
 			$total_order = $balance['total'] ?? 0.0;
@@ -2152,7 +2165,11 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			if (self::can_confirm_order($order)) {
 				$actions['cmi_confirm_transaction'] = __('Confirm CMI PRE transaction', 'cmi');
 				$actions['cmi_cancel_transaction'] = __('Void CMI PRE transaction', 'cmi');
-			} elseif ($order->is_paid() || in_array($order->get_status(), array('processing', 'completed', 'confirmed', $custom_target), true) || ((float) $order->get_total() - (float) $order->get_total_refunded()) > 0.001) {
+			} elseif (
+				Cmi_Payment_State::is_captured((string) $order->get_meta(self::PAYMENT_STATUS_META_KEY, true), $order->get_status(), $order->is_paid(), $custom_target)
+				&& ((float) $order->get_total() - (float) $order->get_total_refunded()) > 0.001
+			) {
+				// Only a captured payment with an amount left to refund: never Pending, Failed or On hold orders.
 				$actions['cmi_refund_transaction'] = __('Refund via CMI API', 'cmi');
 			}
 		}

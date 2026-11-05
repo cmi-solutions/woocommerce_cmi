@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- The payment method's description now shows in the Checkout Blocks checkout, WooCommerce's default checkout, as it already did in the classic checkout.
+- **Refund via CMI API** is no longer offered in the order Actions menu for orders without a captured payment, such as Pending or Failed orders.
+- In the manual exchange rates table, adding a currency after removing another one no longer loses a rate when you save.
+- A customer whose name has no Latin letters, for example a name typed in Arabic, is now asked at checkout to enter it in Latin letters. Before, the name reached CMI empty.
+
 ## 2.0.0
 
 A major update. Some things now work differently, so please read **Before you update** and **Changes to how the plugin works** before installing it.
