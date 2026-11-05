@@ -105,10 +105,10 @@ All settings are in **WooCommerce → Settings → Payments → CMI**. Fields ma
 
 In both modes, CMI notifies your shop after each payment, and the order is updated automatically. If that notification doesn't reach your shop in Manual mode and the order stays **Pending**:
 
-- **Complete Kit:** the plugin checks CMI automatically about 15 minutes, 1 hour and 6 hours later, and moves the order to **On hold** if the payment is pre-authorized. These checks never confirm, void or refund a payment. You can also click **Check CMI** at any time.
+- **Complete Kit:** the plugin checks CMI automatically and moves the order to **On hold** if the payment is pre-authorized. These checks never confirm, void or refund a payment. You can also click **Check CMI** at any time.
 - **Standard Kit:** check the CMI back office and update the order yourself.
 
-WooCommerce's **Hold stock** setting (**WooCommerce → Settings → Products → Inventory**) can cancel unpaid orders automatically. Set it to more than 15 minutes, or leave it empty, so the plugin's first check runs first.
+WooCommerce's **Hold stock** setting (**WooCommerce → Settings → Products → Inventory**) can cancel unpaid orders automatically. Leave it empty, or set it long enough for the plugin's first check to run first.
 
 ### Order status after capture
 
