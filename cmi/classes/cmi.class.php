@@ -134,15 +134,15 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		$this->usernameapi = $this->get_config_value('api_username', 'usernameapi');
 		$this->exchange_rates = (string) $this->get_option('exchange_rates', '');
 
-		$this->currency_details = get_option(
-			'woocommerce_cmi_currencies',
-			array(
-				array(
-					'currency_code' => $this->get_option('currency_code'),
-					'currency_rate' => $this->get_option('currency_rate'),
-				),
-			)
-		);
+		// Rates saved in the table. Very old versions stored one rate in the settings instead.
+		$legacy_rate = array();
+		if ((string) $this->get_option('currency_code', '') !== '' && (string) $this->get_option('currency_rate', '') !== '') {
+			$legacy_rate[] = array(
+				'currency_code' => $this->get_option('currency_code'),
+				'currency_rate' => $this->get_option('currency_rate'),
+			);
+		}
+		$this->currency_details = (array) get_option('woocommerce_cmi_currencies', $legacy_rate);
 
 
 
@@ -205,8 +205,8 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			'kit_type' => array(
 				'title' => __('CMI Kit Type', 'cmi'),
 				'type' => 'select',
-				'description' => __('<strong>Standard Kit</strong> — Redirects the customer to the CMI hosted payment page. Transaction management (confirmation, void, refund) must be done from the CMI back office.<br><strong>Complete Kit (with API)</strong> — Same as Standard Kit, plus a <strong>CMI Actions</strong> column in the WooCommerce orders list allowing you to <strong>Confirm</strong>, <strong>Void</strong>, and <strong>Refund</strong> transactions directly from your shop.', 'cmi'),
-				'default' => 'complete',
+				'description' => __('<strong>Standard Kit</strong> — Redirects the customer to the CMI hosted payment page. Transaction management (confirmation, void, refund) must be done from the CMI back office.<br><strong>Complete Kit (with API)</strong> — Same as Standard Kit, plus a <strong>CMI Actions</strong> column in the WooCommerce orders list allowing you to <strong>Confirm</strong>, <strong>Void</strong>, and <strong>Refund</strong> transactions directly from your shop. It requires the API credentials provided by CMI (API URL, username and password).', 'cmi'),
+				'default' => 'standard',
 				'options' => array(
 					'standard' => __('Standard Kit — Hosted Payment Page only', 'cmi'),
 					'complete' => __('Complete Kit — With API Management (Confirm, Void, Refund)', 'cmi'),
@@ -215,7 +215,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			'confirmation_mode' => array(
 				'title' => __('Payment Confirmation', 'cmi'),
 				'type' => 'select',
-				'description' => __('<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. If the order is still pending after 15 minutes, the plugin also checks CMI automatically (Complete Kit), and you can use Check CMI at any time.', 'cmi'),
+				'description' => __('<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. If the order stays pending, the plugin also checks CMI automatically (Complete Kit), and you can use Check CMI at any time.', 'cmi'),
 				'default' => 'automatic',
 				'options' => array(
 					'automatic' => __('Automatic — Capture payment immediately', 'cmi'),
@@ -390,8 +390,12 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			$changed = true;
 		}
 		// Defaults for new fields — existing installs keep working
+		$has_api_credentials = trim((string) ($settings['api_gateway_url'] ?? '')) !== ''
+			&& trim((string) ($settings['api_username'] ?? '')) !== ''
+			&& trim((string) ($settings['api_password'] ?? '')) !== '';
 		$new_defaults = array(
-			'kit_type' => 'complete',
+			// The Complete Kit needs the API credentials: without them, start with the Standard Kit.
+			'kit_type' => $has_api_credentials ? 'complete' : 'standard',
 			'offshore_account' => 'no',
 			'offshore_currency' => 'EUR',
 		);
@@ -568,6 +572,11 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			$rejected = array();
 
 			foreach ($currency_codes as $i => $code) {
+				// A row whose rate was left empty holds nothing to save: skip it silently
+				// (e.g. the empty row shown on a new install, whose list starts with AED).
+				if (trim((string) ($currency_rates[$i] ?? '')) === '') {
+					continue;
+				}
 				$rate = Cmi_Currency::parse_rate($currency_rates[$i] ?? '');
 				if (!isset($known_currencies[$code]) || $rate <= 0) {
 					$rejected[] = $code;
@@ -1326,9 +1335,26 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		return isset($data['ProcReturnCode']) && (string) $data['ProcReturnCode'] === '00';
 	}
 
+	/**
+	 * Whether the API can be used: the Complete Kit is chosen and its credentials are set.
+	 * Everything that calls the CMI API (actions, Check CMI, automatic checks) follows this,
+	 * so a Standard Kit shop never calls it, and a Complete Kit without credentials works
+	 * like the Standard Kit instead of offering actions that would fail.
+	 */
 	private function has_api_configuration(): bool
 	{
+		return $this->get_option('kit_type', 'standard') === 'complete' && $this->has_api_credentials();
+	}
+
+	private function has_api_credentials(): bool
+	{
 		return $this->apigateway !== '' && $this->usernameapi !== '' && $this->passwordapi !== '';
+	}
+
+	/** True when the CMI actions (column, menus, buttons) can be offered. */
+	public static function api_actions_enabled(): bool
+	{
+		return self::get_gateway_instance()->has_api_configuration();
 	}
 
 	private function process_callback(WC_Order $order, array $data, bool $is_server_callback = true): string
@@ -1649,6 +1675,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 
 		// Notices & CSS & Modal
 		add_action('admin_notices', array(__CLASS__, 'display_admin_order_action_notices'));
+		add_action('admin_notices', array(__CLASS__, 'display_kit_credentials_notice'));
 		add_action('admin_head', array(__CLASS__, 'render_admin_order_action_css'));
 		add_action('admin_footer', array(__CLASS__, 'render_admin_refund_modal'));
 		add_action('admin_init', array(__CLASS__, 'repair_orphaned_custom_status_orders'));
@@ -1699,9 +1726,8 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 
 	public static function add_cmi_order_columns(array $columns): array
 	{
-		$settings = get_option('woocommerce_cmi_settings', array());
-		$kit_type = $settings['kit_type'] ?? 'complete';
-		if ($kit_type !== 'complete') {
+		// Complete Kit with its API credentials only: without them the actions would fail.
+		if (!self::api_actions_enabled()) {
 			return $columns;
 		}
 
@@ -1921,6 +1947,41 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 			WC_Admin_Settings::add_error(__('CMI: the Store Key was not saved because it must not contain the word "SKS". The previous key was kept.', 'cmi'));
 		}
 		return (string) $this->get_option($key, '');
+	}
+
+	/**
+	 * The Complete Kit needs the API credentials. When one is missing, keep the Standard Kit
+	 * and ask the merchant to enter them, instead of saving a Complete Kit whose actions fail.
+	 */
+	public function validate_kit_type_field(string $key, $value): string
+	{
+		$kit = $this->validate_select_field($key, $value);
+		if ($kit !== 'complete') {
+			return 'standard';
+		}
+		$posted = $this->get_post_data();
+		foreach (array('api_gateway_url', 'api_username', 'api_password') as $field) {
+			if (trim((string) wp_unslash($posted[$this->get_field_key($field)] ?? '')) === '') {
+				if (class_exists('WC_Admin_Settings')) {
+					WC_Admin_Settings::add_error(__('CMI: the Complete Kit needs the API credentials provided by CMI (API URL, API username and API password). Enter them to use the Complete Kit, or use the Standard Kit. The Standard Kit was kept.', 'cmi'));
+				}
+				return 'standard';
+			}
+		}
+		return 'complete';
+	}
+
+	/** Warn on the settings page when a Complete Kit saved earlier has no API credentials. */
+	public static function display_kit_credentials_notice(): void
+	{
+		if (($_GET['page'] ?? '') !== 'wc-settings' || ($_GET['section'] ?? '') !== 'cmi' || !current_user_can('manage_woocommerce')) {
+			return;
+		}
+		$gateway = self::get_gateway_instance();
+		if ($gateway->get_option('kit_type', 'standard') !== 'complete' || $gateway->has_api_credentials()) {
+			return;
+		}
+		echo '<div class="notice notice-warning"><p>' . esc_html__('CMI: the Complete Kit is selected but the API credentials are missing, so the plugin works like the Standard Kit. Enter the API URL, API username and API password provided by CMI, or choose the Standard Kit.', 'cmi') . '</p></div>';
 	}
 
 	public function validate_order_id_prefix_field(string $key, $value): string
@@ -2155,8 +2216,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 
 	public static function add_order_actions(array $actions, WC_Order $order): array
 	{
-		$settings = get_option('woocommerce_cmi_settings', array());
-		if (($settings['kit_type'] ?? 'complete') !== 'complete') {
+		if (!self::api_actions_enabled()) {
 			return $actions;
 		}
 		if ($order->get_payment_method() === 'cmi') {
@@ -2178,8 +2238,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 
 	public static function add_admin_order_list_actions(array $actions, WC_Order $order): array
 	{
-		$settings = get_option('woocommerce_cmi_settings', array());
-		if (($settings['kit_type'] ?? 'complete') !== 'complete') {
+		if (!self::api_actions_enabled()) {
 			return $actions;
 		}
 		if (self::can_confirm_order($order)) {
@@ -2936,7 +2995,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		if ($order->get_payment_method() !== $this->id) {
 			return new WP_Error('cmi_wrong_gateway', __('This order was not paid with CMI.', 'cmi'));
 		}
-		if ($this->apigateway === '' || $this->usernameapi === '' || $this->passwordapi === '') {
+		if (!$this->has_api_configuration()) {
 			return new WP_Error('cmi_api_not_configured', __('Configure the CMI API URL, username, and password before issuing refunds.', 'cmi'));
 		}
 
@@ -3090,7 +3149,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		if (!Cmi_Payment_State::can_confirm($this->get_order_payment_status($order)) && !in_array($order->get_status(), array('on-hold', 'pending'), true)) {
 			return new WP_Error('cmi_not_cancellable', __('Only a CMI PRE transaction can be voided. Confirmed POST transactions must be refunded.', 'cmi'));
 		}
-		if ($this->apigateway === '' || $this->usernameapi === '' || $this->passwordapi === '') {
+		if (!$this->has_api_configuration()) {
 			return new WP_Error('cmi_api_not_configured', __('Configure the CMI API URL, username, and password before cancelling PRE transactions.', 'cmi'));
 		}
 
@@ -3140,7 +3199,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 		if (!Cmi_Payment_State::can_confirm($this->get_order_payment_status($order)) && !in_array($order->get_status(), array('on-hold', 'pending'), true)) {
 			return new WP_Error('cmi_not_pre_authorized', __('Only a CMI PRE transaction can be confirmed.', 'cmi'));
 		}
-		if ($this->apigateway === '' || $this->usernameapi === '' || $this->passwordapi === '') {
+		if (!$this->has_api_configuration()) {
 			return new WP_Error('cmi_api_not_configured', __('Configure the CMI API URL, username, and password before confirming PRE transactions.', 'cmi'));
 		}
 
@@ -3614,7 +3673,7 @@ class WC_Gateway_cmi extends WC_Payment_Gateway
 
 	private function send_cmi_xml_api_request(string $type, WC_Order $order, ?float $amount = null)
 	{
-		if ($this->apigateway === '' || $this->usernameapi === '' || $this->passwordapi === '') {
+		if (!$this->has_api_configuration()) {
 			return new WP_Error('cmi_api_not_configured', __('Configure the CMI API URL, username, and password in WooCommerce settings before performing API operations.', 'cmi'));
 		}
 

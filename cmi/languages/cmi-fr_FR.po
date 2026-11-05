@@ -47,8 +47,8 @@ msgstr "Choisissez votre type de kit CMI et configurez le traitement des paiemen
 msgid "CMI Kit Type"
 msgstr "Type de kit CMI"
 
-msgid "<strong>Standard Kit</strong> — Redirects the customer to the CMI hosted payment page. Transaction management (confirmation, void, refund) must be done from the CMI back office.<br><strong>Complete Kit (with API)</strong> — Same as Standard Kit, plus a <strong>CMI Actions</strong> column in the WooCommerce orders list allowing you to <strong>Confirm</strong>, <strong>Void</strong>, and <strong>Refund</strong> transactions directly from your shop."
-msgstr "<strong>Kit Standard</strong> — Redirige le client vers la page de paiement hébergée par CMI. La gestion des transactions (confirmation, annulation, remboursement) se fait depuis le back-office CMI.<br><strong>Kit Complet (avec API)</strong> — Identique au Kit Standard, avec en plus une colonne <strong>Actions CMI</strong> dans la liste des commandes WooCommerce pour <strong>Confirmer</strong>, <strong>Annuler</strong> et <strong>Rembourser</strong> les transactions directement depuis votre boutique."
+msgid "<strong>Standard Kit</strong> — Redirects the customer to the CMI hosted payment page. Transaction management (confirmation, void, refund) must be done from the CMI back office.<br><strong>Complete Kit (with API)</strong> — Same as Standard Kit, plus a <strong>CMI Actions</strong> column in the WooCommerce orders list allowing you to <strong>Confirm</strong>, <strong>Void</strong>, and <strong>Refund</strong> transactions directly from your shop. It requires the API credentials provided by CMI (API URL, username and password)."
+msgstr "<strong>Kit Standard</strong> — Redirige le client vers la page de paiement hébergée par CMI. La gestion des transactions (confirmation, annulation, remboursement) se fait depuis le back-office CMI.<br><strong>Kit Complet (avec API)</strong> — Identique au Kit Standard, avec en plus une colonne <strong>Actions CMI</strong> dans la liste des commandes WooCommerce pour <strong>Confirmer</strong>, <strong>Annuler</strong> et <strong>Rembourser</strong> les transactions directement depuis votre boutique. Il nécessite les identifiants API fournis par CMI (URL de l'API, nom d'utilisateur et mot de passe)."
 
 msgid "Standard Kit — Hosted Payment Page only"
 msgstr "Kit Standard — Page de paiement hébergée uniquement"
@@ -59,8 +59,8 @@ msgstr "Kit Complet — Avec gestion par API (Confirmer, Annuler, Rembourser)"
 msgid "Payment Confirmation"
 msgstr "Confirmation du paiement"
 
-msgid "<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. If the order is still pending after 15 minutes, the plugin also checks CMI automatically (Complete Kit), and you can use Check CMI at any time."
-msgstr "<strong>Automatique</strong> — Le paiement est débité immédiatement lorsque le client finalise sa commande via le callback.<br><strong>Manuelle</strong> — Le paiement est seulement autorisé (pré-autorisation). Vous devez le confirmer manuellement pour débiter les fonds : depuis la liste des commandes avec le Kit Complet (API), ou depuis le back-office CMI avec le Kit Standard. Si la commande est toujours en attente de paiement après 15 minutes, l'extension vérifie aussi automatiquement CMI (Kit Complet), et vous pouvez utiliser Vérifier CMI à tout moment."
+msgid "<strong>Automatic</strong> — The payment is captured immediately when the customer completes checkout via the callback.<br><strong>Manual</strong> — The payment is only authorized (pre-authorized). You must manually confirm it from the orders list to capture the funds if you have the Complete Kit (API), or via the CMI back office if you only have the Standard Kit. If the order stays pending, the plugin also checks CMI automatically (Complete Kit), and you can use Check CMI at any time."
+msgstr "<strong>Automatique</strong> — Le paiement est débité immédiatement lorsque le client finalise sa commande via le callback.<br><strong>Manuelle</strong> — Le paiement est seulement autorisé (pré-autorisation). Vous devez le confirmer manuellement pour débiter les fonds : depuis la liste des commandes avec le Kit Complet (API), ou depuis le back-office CMI avec le Kit Standard. Si la commande reste en attente de paiement, l'extension vérifie aussi automatiquement CMI (Kit Complet), et vous pouvez utiliser Vérifier CMI à tout moment."
 
 msgid "Automatic — Capture payment immediately"
 msgstr "Automatique — Débiter le paiement immédiatement"
@@ -871,3 +871,9 @@ msgstr "Acceptez les paiements par carte via la page de paiement sécurisée hé
 
 msgid "To pay by card with CMI, please enter your first and last name in Latin letters (for example: Mohamed Alami)."
 msgstr "Pour payer par carte avec CMI, veuillez saisir votre prénom et votre nom en lettres latines (par exemple : Mohamed Alami)."
+
+msgid "CMI: the Complete Kit needs the API credentials provided by CMI (API URL, API username and API password). Enter them to use the Complete Kit, or use the Standard Kit. The Standard Kit was kept."
+msgstr "CMI : le Kit Complet nécessite les identifiants API fournis par CMI (URL de l'API, nom d'utilisateur API et mot de passe API). Saisissez-les pour utiliser le Kit Complet, ou utilisez le Kit Standard. Le Kit Standard a été conservé."
+
+msgid "CMI: the Complete Kit is selected but the API credentials are missing, so the plugin works like the Standard Kit. Enter the API URL, API username and API password provided by CMI, or choose the Standard Kit."
+msgstr "CMI : le Kit Complet est sélectionné mais les identifiants API sont manquants : l'extension fonctionne donc comme le Kit Standard. Saisissez l'URL de l'API, le nom d'utilisateur API et le mot de passe API fournis par CMI, ou choisissez le Kit Standard."

@@ -8,6 +8,10 @@
 - **Refund via CMI API** is no longer offered in the order Actions menu for orders without a captured payment, such as Pending or Failed orders.
 - In the manual exchange rates table, adding a currency after removing another one no longer loses a rate when you save.
 - A customer whose name has no Latin letters, for example a name typed in Arabic, is now asked at checkout to enter it in Latin letters. Before, the name reached CMI empty.
+- Saving the settings on a new install no longer shows "the exchange rate for AED was not saved". The exchange rates table now starts empty, and a row left without a rate is ignored.
+- The **Complete Kit** now requires the API credentials. Saving the Complete Kit without the API URL, username and password keeps the Standard Kit and asks you to enter them. A Complete Kit saved earlier without them works like the Standard Kit, with a warning on the settings page. New installs start with the Standard Kit.
+- With the Standard Kit, the plugin no longer calls the CMI API, even if API credentials were entered.
+- The Payment Confirmation setting no longer states a delay before the automatic checks.
 
 ## 2.0.0
 
